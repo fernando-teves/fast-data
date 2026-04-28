@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Data for AI — Engineering do Brasil</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#060a10;--bg2:#0b1018;--bg3:#111a28;--bg4:#182235;
+  --card:#0d1520;--brd:#1a2640;--brd2:#243352;
+  --tx:#e8edf4;--tx2:#94a3b8;--tx3:#5a6577;
+  --red:#f74a4a;--amb:#e5a61b;--grn:#34d399;--cyan:#22d3ee;
+  --pur:#a78bfa;--blue:#60a5fa;
+  --eng:#e91e8c;--eng2:#c026d3;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--grn);text-decoration:none}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;background:rgba(6,10,16,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(26,38,64,.5)}
+nav .brand{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx2)}
+nav .brand strong{color:var(--grn)}
+nav .links{display:flex;gap:20px}
+nav .links a{font-size:10px;font-weight:600;color:var(--tx3);letter-spacing:.5px;transition:color .2s}
+nav .links a:hover{color:var(--tx)}
+@media(max-width:700px){nav .links{display:none}}
+
+/* SECTIONS */
+section{padding:80px 24px;max-width:1100px;margin:0 auto}
+.sec-tag{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+.sec-title{font-size:clamp(22px,3.5vw,36px);font-weight:700;line-height:1.2;margin-bottom:12px}
+.sec-sub{font-size:14px;color:var(--tx2);line-height:1.7;max-width:700px}
+
+/* HERO */
+#hero{padding:140px 24px 100px;text-align:center;position:relative;min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse,rgba(52,211,153,.05) 0%,transparent 60%);pointer-events:none}
+#hero .hero-tag{font-size:10px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:var(--eng);margin-bottom:16px;display:inline-flex;align-items:center;gap:8px}
+#hero .hero-tag::before,#hero .hero-tag::after{content:'';width:24px;height:1px;background:var(--eng);opacity:.4}
+#hero h1{font-size:clamp(32px,5vw,56px);font-weight:700;line-height:1.08;margin-bottom:16px;background:linear-gradient(135deg,#fff 20%,var(--grn) 70%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#hero .hero-sub{font-size:clamp(15px,2vw,18px);color:var(--tx2);max-width:600px;line-height:1.65;margin-bottom:32px}
+#hero .hero-quote{font-size:14px;font-style:italic;color:var(--tx3);max-width:550px;line-height:1.6;padding:16px 24px;border-left:2px solid var(--grn);text-align:left;margin-bottom:32px}
+#hero .hero-metrics{display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
+.hero-m{text-align:center}
+.hero-m .val{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:var(--grn)}
+.hero-m .lab{font-size:10px;color:var(--tx3);margin-top:2px}
+.scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--tx3);letter-spacing:1px;display:flex;flex-direction:column;align-items:center;gap:6px;animation:bounce 2s ease infinite}
+.scroll-hint::after{content:'';width:1px;height:20px;background:var(--tx3);opacity:.4}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+
+/* MERCADO */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:28px}
+.stat{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:20px;text-align:center;transition:border-color .2s}
+.stat:hover{border-color:var(--brd2)}
+.stat .sv{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;margin-bottom:6px}
+.stat .sl{font-size:11px;color:var(--tx2);line-height:1.5}
+.stat .ss{font-size:9px;color:var(--tx3);margin-top:6px}
+
+/* DOR */
+.pain-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:24px}
+@media(max-width:800px){.pain-grid{grid-template-columns:1fr}}
+.pain{background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:18px;border-left:3px solid}
+.pain h4{font-size:13px;font-weight:700;margin-bottom:6px}
+.pain p{font-size:11px;color:var(--tx2);line-height:1.55}
+.pain.p-red{border-left-color:var(--red)}.pain.p-red h4{color:var(--red)}
+.pain.p-amb{border-left-color:var(--amb)}.pain.p-amb h4{color:var(--amb)}
+.pain.p-grn{border-left-color:var(--grn)}.pain.p-grn h4{color:var(--grn)}
+
+/* COMPARATIVO */
+.comp-table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--brd);border-radius:12px;overflow:hidden;margin-top:24px;font-size:11px}
+.comp-table th{padding:12px 14px;background:var(--bg3);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--brd)}
+.comp-table th:not(:first-child){border-left:1px solid var(--brd)}
+.comp-table td{padding:10px 14px;border-bottom:1px solid var(--brd)}
+.comp-table td:not(:first-child){border-left:1px solid var(--brd);text-align:center}
+.comp-table tr:last-child td{border-bottom:none}
+.tv{font-family:'JetBrains Mono',monospace;font-weight:600}
+
+/* OFERTA */
+.value-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+@media(max-width:700px){.value-cards{grid-template-columns:1fr}}
+.vc{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:20px}
+.vc .vc-icon{font-size:20px;margin-bottom:8px}
+.vc h4{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--grn)}
+.vc p{font-size:12px;color:var(--tx2);line-height:1.6}
+
+/* HIGHLIGHT */
+.highlight{background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:32px;text-align:center;margin:40px 0}
+.highlight .h-text{font-size:clamp(16px,2.5vw,22px);font-weight:600;line-height:1.5;color:var(--tx);max-width:700px;margin:0 auto}
+.highlight .h-text em{color:var(--grn);font-style:normal;font-weight:700}
+
+/* ARCHITECTURE */
+.arch-layer{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px;padding:16px 18px;background:var(--card);border:1px solid var(--brd);border-radius:12px;transition:border-color .2s}
+.arch-layer:hover{border-color:var(--brd2)}
+.arch-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;flex-shrink:0;border:1px solid}
+.arch-body{flex:1}
+.arch-body h4{font-size:13px;font-weight:700;margin-bottom:3px}
+.arch-body p{font-size:11px;color:var(--tx2);line-height:1.5}
+.arch-body .pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.pill{font-size:8px;font-weight:600;padding:2px 7px;border-radius:3px;background:var(--bg3);border:1px solid var(--brd);color:var(--tx3)}
+.arch-lat{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;flex-shrink:0;text-align:right;min-width:60px}
+.arch-connector{text-align:center;padding:2px 0;color:var(--tx3);font-size:10px;letter-spacing:2px}
+
+/* DHuO */
+.dhuo-box{background:linear-gradient(135deg,rgba(233,30,140,.04),rgba(192,38,211,.03));border:1px solid rgba(233,30,140,.2);border-radius:14px;padding:28px;margin-top:24px}
+.dhuo-box h3{font-size:18px;font-weight:700;color:var(--eng);margin-bottom:6px}
+.dhuo-box .dhuo-sub{font-size:12px;color:var(--tx2);margin-bottom:16px;line-height:1.6}
+.dhuo-caps{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:700px){.dhuo-caps{grid-template-columns:1fr}}
+.dcap{background:rgba(233,30,140,.03);border:1px solid rgba(233,30,140,.1);border-radius:8px;padding:14px}
+.dcap h5{font-size:11px;font-weight:700;color:var(--eng);margin-bottom:4px}
+.dcap p{font-size:10px;color:var(--tx2);line-height:1.5}
+
+/* LIFECYCLE */
+.lc-flow{display:flex;gap:10px;margin-top:24px;align-items:stretch}
+@media(max-width:700px){.lc-flow{flex-direction:column}}
+.lc-box{flex:1;border-radius:12px;padding:18px;border:1px solid;position:relative}
+.lc-box h4{font-size:13px;font-weight:700;margin-bottom:6px}
+.lc-box p{font-size:11px;line-height:1.55}
+.lc-box .lc-tech{font-family:'JetBrains Mono',monospace;font-size:9px;margin-top:8px;opacity:.6}
+.lc-arrow{position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--tx3);z-index:2;font-size:16px}
+.lc-hot{background:rgba(52,211,153,.04);border-color:rgba(52,211,153,.2)}
+.lc-hot h4{color:var(--grn)}.lc-hot p{color:var(--tx2)}
+.lc-warm{background:rgba(218,165,32,.03);border-color:rgba(218,165,32,.15)}
+.lc-warm h4{color:var(--amb)}.lc-warm p{color:var(--tx2)}
+.lc-cold{background:rgba(96,165,250,.03);border-color:rgba(96,165,250,.1)}
+.lc-cold h4{color:var(--blue)}.lc-cold p{color:var(--tx2)}
+
+/* USE CASES */
+.uc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:24px}
+.uc{background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:16px}
+.uc h5{font-size:12px;font-weight:700;margin-bottom:6px;color:var(--cyan)}
+.uc ul{font-size:10px;color:var(--tx2);line-height:1.6;padding-left:14px}
+.uc ul li{margin-bottom:2px}
+
+/* CASE */
+.case-box{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:28px;margin-top:24px}
+.case-box .case-tag{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--grn);margin-bottom:8px}
+.case-box h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.case-box .case-sub{font-size:12px;color:var(--tx2);line-height:1.6;margin-bottom:16px}
+.case-results{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.case-results{grid-template-columns:1fr}}
+.cr{background:var(--bg2);border-radius:8px;padding:12px}
+.cr .cr-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--tx3);margin-bottom:3px}
+.cr .cr-val{font-size:12px;font-weight:600;color:var(--tx);line-height:1.4}
+
+/* COMMERCIAL ENTRY */
+.entry-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:24px}
+.entry{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:20px;text-align:center;transition:border-color .3s}
+.entry:hover{border-color:var(--grn)}
+.entry .en{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px}
+.entry h4{font-size:15px;font-weight:700;margin-bottom:6px}
+.entry p{font-size:11px;color:var(--tx2);line-height:1.5}
+.entry .dur{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--grn);margin-top:8px;font-weight:600}
+
+/* CTA */
+#cta{text-align:center;padding:100px 24px}
+#cta h2{font-size:clamp(22px,3.5vw,36px);font-weight:700;margin-bottom:12px}
+#cta .cta-text{font-size:14px;color:var(--tx2);max-width:600px;margin:0 auto 24px;line-height:1.65}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--grn);color:#000;font-family:inherit;font-size:13px;font-weight:700;border:none;border-radius:8px;cursor:pointer;transition:all .2s;text-decoration:none}
+.cta-btn:hover{background:#2dd4bf;transform:translateY(-1px)}
+
+.footer{text-align:center;padding:20px 24px 40px;font-size:9px;color:var(--tx3);border-top:1px solid var(--brd)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="brand">Engineering <strong>Fast Data</strong></div>
+  <div class="links">
+    <a href="#mercado">Mercado</a>
+    <a href="#fastdata">O que é</a>
+    <a href="#arquitetura">Arquitetura</a>
+    <a href="#dhuo">DHuO</a>
+    <a href="#usecases">Casos de uso</a>
+    <a href="#entrada">Entrada</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-tag">Engineering do Brasil — Fast Data for AI</div>
+  <h1>Fast Data for AI</h1>
+  <div class="hero-sub">Dados em tempo real para negócios, operações e ambientes dinâmicos. Pare de analisar o passado e comece a agir sobre o presente.</div>
+  <div class="hero-quote">"O valor e a validade de um dado podem expirar em poucos segundos. O Fast Data permite que as empresas ajam na velocidade dos acontecimentos, e não apenas reajam ao que já passou."</div>
+  <div class="hero-metrics">
+    <div class="hero-m"><div class="val">&lt;100ms</div><div class="lab">Latência end-to-end</div></div>
+    <div class="hero-m"><div class="val">99.9%</div><div class="lab">Disponibilidade</div></div>
+    <div class="hero-m"><div class="val">Real time</div><div class="lab">Freshness dos dados</div></div>
+  </div>
+  <div class="scroll-hint">scroll</div>
+</section>
+
+<!-- MERCADO -->
+<section id="mercado">
+  <div class="sec-tag" style="color:var(--cyan)">Cenário de mercado</div>
+  <div class="sec-title">O mercado já se moveu. A questão é: você está acompanhando?</div>
+  <div class="sec-sub">Dados de mercado que comprovam a urgência de Fast Data para empresas que querem competir em ambientes dinâmicos.</div>
+  <div class="stat-grid">
+    <div class="stat"><div class="sv" style="color:var(--grn)">20%</div><div class="sl">Aumento no EBIT para empresas que adotam fluxos de dados contínuos</div><div class="ss">McKinsey</div></div>
+    <div class="stat"><div class="sv" style="color:var(--cyan)">60%</div><div class="sl">Redução no tempo entre coleta do dado e decisão estratégica</div><div class="ss">McKinsey</div></div>
+    <div class="stat"><div class="sv" style="color:var(--grn)">30%</div><div class="sl">Redução de custos operacionais com dados em tempo real</div><div class="ss">Bain &amp; Company</div></div>
+    <div class="stat"><div class="sv" style="color:var(--pur)">2.2x</div><div class="sl">Mais propensas a superar concorrentes em satisfação e produtividade</div><div class="ss">Forrester</div></div>
+    <div class="stat"><div class="sv" style="color:var(--amb)">86%</div><div class="sl">Dos líderes de TI classificam streaming como prioridade máxima</div><div class="ss">IDC</div></div>
+    <div class="stat"><div class="sv" style="color:var(--cyan)">53%</div><div class="sl">Dos executivos apontam Fast Data como benefício #1 na tomada de decisão</div><div class="ss">Gartner</div></div>
+    <div class="stat"><div class="sv" style="color:var(--grn)">15%</div><div class="sl">Das decisões serão autônomas via agentes com Fast Data até 2028</div><div class="ss">Gartner</div></div>
+    <div class="stat"><div class="sv" style="color:var(--amb)">25%</div><div class="sl">Das empresas já explorando streaming em 2025 (era 8% em 2023)</div><div class="ss">ISG</div></div>
+  </div>
+</section>
+
+<!-- DOR -->
+<section id="dor">
+  <div class="sec-tag" style="color:var(--red)">O problema</div>
+  <div class="sec-title">Nem todo "real time" é Fast Data</div>
+  <div class="sec-sub">A maioria das empresas enfrenta problemas críticos nas suas arquiteturas de dados. Entenda onde cada modelo falha.</div>
+  <div class="pain-grid">
+    <div class="pain p-red">
+      <h4>BD Tradicional (OLTP)</h4>
+      <p>Queries analíticas competem com transações no mesmo BD de produção. Resultado: locks, deadlocks, timeouts, falhas em cascata. Latência de 500ms a 5s+. Sem gateway, sem governança, sem escalabilidade.</p>
+    </div>
+    <div class="pain p-amb">
+      <h4>Data Lake / Data Warehouse</h4>
+      <p>Dados sempre com algum atraso — análise do passado recente, nunca do presente. ETL incremental com latência de ~1min a 24h+ dependendo do pipeline. Schema drift, falhas silenciosas, reprocessamento custoso.</p>
+    </div>
+    <div class="pain p-grn">
+      <h4>Fast Data for AI (ENG)</h4>
+      <p>Camada de contexto em tempo real. Dados processados assim que nascem, disponíveis em &lt;100ms via streaming + in-memory. Governança nativa com DHuO. Não substitui DL/DW — complementa.</p>
+    </div>
+  </div>
+
+  <div style="overflow-x:auto;margin-top:20px;border-radius:12px">
+  <table class="comp-table">
+    <thead><tr>
+      <th style="text-align:left;width:22%">Critério</th>
+      <th style="color:var(--red)">BD Tradicional</th>
+      <th style="color:var(--amb)">Data Lake / DW</th>
+      <th style="color:var(--grn)">Fast Data (ENG)</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="color:var(--tx2)">Latência</td><td class="tv" style="color:var(--red)">500ms–5s+</td><td class="tv" style="color:var(--amb)">~1min–24h+</td><td class="tv" style="color:var(--grn)">&lt;100ms</td></tr>
+      <tr><td style="color:var(--tx2)">Análise</td><td>Consulta pontual</td><td>Passado recente</td><td style="color:var(--grn);font-weight:600">Presente (real time)</td></tr>
+      <tr><td style="color:var(--tx2)">Processamento</td><td>Request-response</td><td>Batch incremental</td><td style="color:var(--grn);font-weight:600">Streaming contínuo</td></tr>
+      <tr><td style="color:var(--tx2)">Segurança</td><td style="color:var(--red)">Ad hoc</td><td style="color:var(--amb)">IAM/RBAC parcial</td><td style="color:var(--grn)">DHuO DataSecOps</td></tr>
+      <tr><td style="color:var(--tx2)">AI / Agentes</td><td style="color:var(--red)">&#10060;</td><td style="color:var(--amb)">Parcial</td><td style="color:var(--grn)">&#10004; Nativo</td></tr>
+      <tr><td style="color:var(--tx2)">Disponibilidade</td><td style="color:var(--red)">~92%</td><td style="color:var(--amb)">~97%</td><td style="color:var(--grn)">~99.9%</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- HIGHLIGHT -->
+<div style="max-width:1100px;margin:0 auto;padding:0 24px">
+  <div class="highlight">
+    <div class="h-text">"A vantagem competitiva não virá mais apenas do <em>volume</em> de dados, mas da <em>velocidade</em> com que eles são transformados em ação."</div>
+  </div>
+</div>
+
+<!-- O QUE É FAST DATA -->
+<section id="fastdata">
+  <div class="sec-tag" style="color:var(--grn)">A oferta</div>
+  <div class="sec-title">Fast Data: aja na velocidade dos acontecimentos</div>
+  <div class="sec-sub">Não é apenas velocidade. É ação imediata baseada em dados do presente — com governança, segurança e integração nativa com AI.</div>
+  <div class="value-cards">
+    <div class="vc">
+      <div class="vc-icon">&#9889;</div>
+      <h4>Insights acionáveis em tempo real</h4>
+      <p>Tomada de decisão e ação imediata. O tempo entre a chegada do dado e a ação baseada nele é de milissegundos — não horas ou dias.</p>
+    </div>
+    <div class="vc">
+      <div class="vc-icon">&#128200;</div>
+      <h4>Análise do presente, não do passado</h4>
+      <p>Análise operacional sobre dados do momento atual. Dashboards que mostram o agora, não o ontem. Decisões sobre o que está acontecendo, não o que já aconteceu.</p>
+    </div>
+    <div class="vc">
+      <div class="vc-icon">&#128274;</div>
+      <h4>Governança e DataSecOps nativo</h4>
+      <p>O DHuO garante autenticação, rate limiting, audit trail e governança em toda a cadeia — do dado bruto ao consumo pela AI. Não é um add-on: é parte da arquitetura.</p>
+    </div>
+    <div class="vc">
+      <div class="vc-icon">&#128260;</div>
+      <h4>Complementa, não substitui</h4>
+      <p>Fast Data é uma camada de contexto (hot data) que complementa o Data Lake/DW e o legado. Dados quentes ficam disponíveis em ms, depois fluem para warm/cold storage.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ARQUITETURA -->
+<section id="arquitetura">
+  <div class="sec-tag" style="color:var(--cyan)">Arquitetura</div>
+  <div class="sec-title">6 camadas, da origem à ação em &lt;100ms</div>
+  <div class="sec-sub">Cada camada da plataforma Fast Data com as tecnologias, papel no pipeline e latência acumulada.</div>
+
+  <div style="margin-top:28px">
+    <div class="arch-layer">
+      <div class="arch-num" style="background:rgba(96,165,250,.06);border-color:rgba(96,165,250,.2);color:var(--blue)">01</div>
+      <div class="arch-body">
+        <h4 style="color:var(--blue)">Data sources (origens)</h4>
+        <p>CDC em bancos (Debezium, Golden Gate), IoT, logs, webhooks, sistemas. Dados capturados no momento em que são gerados.</p>
+        <div class="pills"><span class="pill">Debezium</span><span class="pill">Golden Gate</span><span class="pill">MQTT</span><span class="pill">Webhooks</span></div>
+      </div>
+      <div class="arch-lat" style="color:var(--blue)">0ms</div>
+    </div>
+    <div class="arch-connector">&#8595;</div>
+
+    <div class="arch-layer">
+      <div class="arch-num" style="background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.2);color:var(--grn)">02</div>
+      <div class="arch-body">
+        <h4 style="color:var(--grn)">Ingestão — Apache Kafka (streaming)</h4>
+        <p>Barramento de eventos distribuído. Log imutável, event replay, milhões de eventos/segundo. Backbone do Fast Data.</p>
+        <div class="pills"><span class="pill">Apache Kafka</span><span class="pill">Kafka Connect</span><span class="pill">Schema Registry</span><span class="pill">Confluent</span></div>
+      </div>
+      <div class="arch-lat" style="color:var(--grn)">~5ms</div>
+    </div>
+    <div class="arch-connector">&#8595;</div>
+
+    <div class="arch-layer">
+      <div class="arch-num" style="background:rgba(34,211,238,.06);border-color:rgba(34,211,238,.2);color:var(--cyan)">03</div>
+      <div class="arch-body">
+        <h4 style="color:var(--cyan)">Processamento — Stream Processing</h4>
+        <p>Transformação, enriquecimento e analytics em tempo real. Cada evento processado assim que chega. Exactly-once semantics.</p>
+        <div class="pills"><span class="pill">Apache Flink</span><span class="pill">Spark Streaming</span><span class="pill">KSQL</span><span class="pill">Kafka Streams</span></div>
+      </div>
+      <div class="arch-lat" style="color:var(--cyan)">~15ms</div>
+    </div>
+    <div class="arch-connector">&#8595;</div>
+
+    <div class="arch-layer">
+      <div class="arch-num" style="background:rgba(167,139,250,.06);border-color:rgba(167,139,250,.2);color:var(--pur)">04</div>
+      <div class="arch-body">
+        <h4 style="color:var(--pur)">Serving Layer — In-memory e NoSQL</h4>
+        <p>Camada de contexto (hot data). Dados de curto prazo disponíveis em sub-ms. TTL automático. Após uso, persistem no DL/DW.</p>
+        <div class="pills"><span class="pill">Redis</span><span class="pill">Hazelcast</span><span class="pill">Memcached</span><span class="pill">MongoDB</span><span class="pill">Cassandra</span></div>
+      </div>
+      <div class="arch-lat" style="color:var(--pur)">~25ms</div>
+    </div>
+    <div class="arch-connector">&#8595;</div>
+
+    <div class="arch-layer" style="border-color:rgba(233,30,140,.2);background:linear-gradient(135deg,rgba(233,30,140,.03),rgba(192,38,211,.02))">
+      <div class="arch-num" style="background:rgba(233,30,140,.06);border-color:rgba(233,30,140,.2);color:var(--eng)">05</div>
+      <div class="arch-body">
+        <h4 style="color:var(--eng)">DHuO — API Gateway + Governança</h4>
+        <p>Plataforma da Engineering. APIs governadas, auth, rate limit, audit trail, MCP Server, AI Gateway. DataSecOps nativo.</p>
+        <div class="pills"><span class="pill">DHuO</span><span class="pill">API Gateway</span><span class="pill">MCP Server</span><span class="pill">AI Gateway</span><span class="pill">Agent Builder</span></div>
+      </div>
+      <div class="arch-lat" style="color:var(--eng)">~40ms</div>
+    </div>
+    <div class="arch-connector">&#8595;</div>
+
+    <div class="arch-layer">
+      <div class="arch-num" style="background:rgba(218,165,32,.06);border-color:rgba(218,165,32,.2);color:var(--amb)">06</div>
+      <div class="arch-body">
+        <h4 style="color:var(--amb)">Consumo — BI, AI, Agentes, Ações</h4>
+        <p>Dashboards real time, ML, deep learning, visão computacional, agentes de IA com contexto, ações automáticas, apps e canais digitais.</p>
+      </div>
+      <div class="arch-lat" style="color:var(--amb)">&lt;80ms</div>
+    </div>
+  </div>
+</section>
+
+<!-- DHuO -->
+<section id="dhuo">
+  <div class="sec-tag" style="color:var(--eng)">Plataforma</div>
+  <div class="sec-title">DHuO: o coração da governança</div>
+  <div class="sec-sub">Uma boa arquitetura Fast Data conta com o DHuO — plataforma modular all-in-one para integração de sistemas, dados, canais digitais e ecossistemas de IA.</div>
+  <div class="dhuo-box">
+    <h3>DHuO — AI Integration. Simplified.</h3>
+    <div class="dhuo-sub">Plataforma da Engineering para gestão de APIs, integração de sistemas, dados e IA. Tão rápida e eficiente como o Fast Data. +50 bilhões de transações/ano. 18x mais barato que Apigee. Até 60% de redução em custos de infra.</div>
+    <div class="dhuo-caps">
+      <div class="dcap">
+        <h5>API Management</h5>
+        <p>API Design, Gateway, Multi-Gateway, Catálogo, Developer Portal, Productization, Security Policies, Observability.</p>
+      </div>
+      <div class="dcap">
+        <h5>iPaaS</h5>
+        <p>No-Code Editor, Orquestração, Service Catalog, Multi-Cloud, Conectores (DB, Storage, Messaging, IoT, Enterprise Apps).</p>
+      </div>
+      <div class="dcap">
+        <h5>Data &amp; AI</h5>
+        <p>AI Gateway, MCP Server, Agent Builder, Data Pipelines, Data Quality, Data Catalog, AI API Design e Test Automation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CICLO DE VIDA -->
+<section id="lifecycle">
+  <div class="sec-tag" style="color:var(--grn)">Ciclo de vida</div>
+  <div class="sec-title">Hot → Warm → Cold</div>
+  <div class="sec-sub">O Fast Data não substitui o Data Lake/DW nem o banco legado. Ele é a camada quente que complementa o ecossistema com dados de contexto.</div>
+  <div class="lc-flow">
+    <div class="lc-box lc-hot">
+      <h4>&#9889; Hot — Fast Data</h4>
+      <p>Dados de contexto de curto prazo. Disponíveis em milissegundos para serviços, AI e BI. Expiram via TTL após uso.</p>
+      <div class="lc-tech">Redis, Hazelcast, Kafka | &lt;100ms | minutos–horas</div>
+      <span class="lc-arrow">&#8594;</span>
+    </div>
+    <div class="lc-box lc-warm">
+      <h4>&#128451; Warm — Data Lake / DW</h4>
+      <p>Dados persistidos para análise histórica, consolidação e treinamento de modelos. Incremental.</p>
+      <div class="lc-tech">S3, BigQuery, Snowflake | min–horas | meses</div>
+      <span class="lc-arrow">&#8594;</span>
+    </div>
+    <div class="lc-box lc-cold">
+      <h4>&#128451; Cold — Legado / Arquivo</h4>
+      <p>Persistência definitiva. Compliance, arquivo de longo prazo, bancos transacionais legados.</p>
+      <div class="lc-tech">Oracle, SQL Server, Glacier | horas–dias | anos</div>
+    </div>
+  </div>
+</section>
+
+<!-- CASOS DE USO -->
+<section id="usecases">
+  <div class="sec-tag" style="color:var(--pur)">Aplicações</div>
+  <div class="sec-title">Casos de uso por setor</div>
+  <div class="sec-sub">O Fast Data se aplica a qualquer operação onde tempo de resposta e dados frescos geram impacto direto no negócio.</div>
+  <div class="uc-grid">
+    <div class="uc">
+      <h5>&#128177; Financeiro</h5>
+      <ul><li>Sistema antifraude em tempo real</li><li>Trading de alta frequência</li><li>Análise de crédito instantânea</li><li>Gestão de liquidez real time</li><li>Seguros baseados no uso</li></ul>
+    </div>
+    <div class="uc">
+      <h5>&#128225; Telecom</h5>
+      <ul><li>Otimização de rede adaptativa</li><li>Gestão de experiência do cliente</li><li>Cibersegurança e detecção de intrusão</li><li>Canais digitais com dados frescos</li></ul>
+    </div>
+    <div class="uc">
+      <h5>&#9889; Energia &amp; Utilities</h5>
+      <ul><li>Smart grids e redes elétricas</li><li>Detecção de perdas não técnicas</li><li>Manutenção preditiva com IoT</li><li>Monitoramento em tempo real</li></ul>
+    </div>
+    <div class="uc">
+      <h5>&#127981; Indústria &amp; Mineração</h5>
+      <ul><li>Controle de qualidade em linha</li><li>Gestão de frotas autônomas</li><li>IoT industrial e manutenção preditiva</li><li>Digital twin operacional</li></ul>
+    </div>
+    <div class="uc">
+      <h5>&#128666; Logística &amp; E-commerce</h5>
+      <ul><li>Rastreamento de frotas real time</li><li>Otimização de rotas e preços</li><li>Hiperpersonalização em streaming</li><li>Smart cities e mobilidade</li></ul>
+    </div>
+    <div class="uc">
+      <h5>&#127973; Saúde &amp; Educação</h5>
+      <ul><li>Telemetria médica e RPM</li><li>Fluxo hospitalar (pronto-socorro)</li><li>Diagnóstico rápido</li><li>Aprendizado adaptativo e fiscalização</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- CASES -->
+<section id="cases">
+  <div class="sec-tag" style="color:var(--grn)">Cases de sucesso</div>
+  <div class="sec-title">Quem já está usando Fast Data</div>
+  <div class="sec-sub">Empresas líderes de diferentes setores já adotaram a arquitetura Fast Data da Engineering para transformar suas operações.</div>
+
+  <!-- CASE 1: Saneamento -->
+  <div class="case-box">
+    <div class="case-tag">Saneamento &amp; Utilities — Em produção</div>
+    <h3>A maior empresa de saneamento da América Latina</h3>
+    <div class="case-sub">A agência virtual da companhia é um canal digital 24h para milhões de clientes resolverem serviços de água e esgoto. Apesar de estruturado, o canal batia diretamente no BD de produção do sistema comercial (160TB Oracle on-premise), causando indisponibilidade, lentidão, timeouts e falhas em cascata recorrentes.</div>
+    <div class="case-results">
+      <div class="cr"><div class="cr-label">Problema</div><div class="cr-val">Canal digital batia direto no BD de produção, impactando a agência virtual e o sistema comercial inteiro.</div></div>
+      <div class="cr"><div class="cr-label">Solução</div><div class="cr-val">CDC + Golden Gate + OCI + GCP + Oracle Cloud + DHuO API Gateway + Frontend redesenhado.</div></div>
+      <div class="cr"><div class="cr-label">Resultado</div><div class="cr-val">Maior disponibilidade, baixa latência, queda drástica em erros e falhas. Dados de fato em tempo real.</div></div>
+      <div class="cr"><div class="cr-label">Expansão</div><div class="cr-val">Fast Data expandido para WhatsApp e assistente virtual (chat online) da companhia.</div></div>
+    </div>
+  </div>
+
+  <!-- CASE 2: Telecom em produção -->
+  <div class="case-box" style="margin-top:14px">
+    <div class="case-tag">Telecomunicações — Em produção</div>
+    <h3>Uma das maiores operadoras de telecomunicações do Brasil</h3>
+    <div class="case-sub">Operadora com dezenas de milhões de clientes já utiliza a arquitetura Fast Data em produção para otimizar a experiência dos canais digitais, garantindo dados em tempo real para serviços de atendimento, consulta e autogestão de planos e serviços.</div>
+    <div class="case-results">
+      <div class="cr"><div class="cr-label">Cenário</div><div class="cr-val">Canais digitais com alta volumetria precisavam de dados frescos para atendimento e autogestão em tempo real.</div></div>
+      <div class="cr"><div class="cr-label">Solução</div><div class="cr-val">Arquitetura Fast Data com streaming, in-memory e DHuO API Gateway integrado ao ecossistema existente.</div></div>
+      <div class="cr"><div class="cr-label">Resultado</div><div class="cr-val">Dados em tempo real nos canais digitais, redução de latência e melhoria na experiência do cliente final.</div></div>
+      <div class="cr"><div class="cr-label">Status</div><div class="cr-val" style="color:var(--grn);font-weight:700">&#10004; Em produção</div></div>
+    </div>
+  </div>
+
+  <!-- CASE 3: Telecom em implementação -->
+  <div class="case-box" style="margin-top:14px">
+    <div class="case-tag" style="color:var(--amb)">Telecomunicações — Em implementação</div>
+    <h3>Outra grande operadora de telecomunicações do Brasil</h3>
+    <div class="case-sub">Uma das maiores operadoras de telefonia e banda larga do país está em fase de implementação da arquitetura Fast Data, com foco em habilitar dados em tempo real para operações, canais digitais e futura integração com agentes de IA.</div>
+    <div class="case-results">
+      <div class="cr"><div class="cr-label">Cenário</div><div class="cr-val">Necessidade de modernizar a camada de dados para suportar real time em escala com governança.</div></div>
+      <div class="cr"><div class="cr-label">Solução</div><div class="cr-val">Implementação da plataforma Fast Data com streaming, serving layer e governança via DHuO.</div></div>
+      <div class="cr"><div class="cr-label">Objetivo</div><div class="cr-val">Habilitar dados de contexto em tempo real para operações, BI e preparação para AI/agentes.</div></div>
+      <div class="cr"><div class="cr-label">Status</div><div class="cr-val" style="color:var(--amb);font-weight:700">&#9203; Em fase de implementação</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ENTRADA COMERCIAL -->
+<section id="entrada">
+  <div class="sec-tag" style="color:var(--amb)">Modelo de entrada</div>
+  <div class="sec-title">Como começar</div>
+  <div class="sec-sub">Modelos flexíveis de engajamento para qualquer estágio de maturidade.</div>
+  <div class="entry-grid">
+    <div class="entry">
+      <div class="en">Fase 01</div>
+      <h4>Discovery</h4>
+      <p>Diagnóstico da arquitetura atual, mapeamento de fontes de dados, identificação de casos de uso prioritários e desenho da solução Fast Data.</p>
+      <div class="dur">2–4 semanas</div>
+    </div>
+    <div class="entry">
+      <div class="en">Fase 02</div>
+      <h4>PoC / Piloto</h4>
+      <p>Implementação de um caso de uso real com Kafka, Flink, in-memory e DHuO. Prova de valor com métricas de latência, disponibilidade e impacto.</p>
+      <div class="dur">4–8 semanas</div>
+    </div>
+    <div class="entry">
+      <div class="en">Fase 03</div>
+      <h4>Implementação</h4>
+      <p>Rollout completo da plataforma Fast Data com integração ao ecossistema existente (DL/DW, legado, AI). Governança com DHuO.</p>
+      <div class="dur">8–16 semanas</div>
+    </div>
+    <div class="entry">
+      <div class="en">Contínuo</div>
+      <h4>Sustentação &amp; Evolução</h4>
+      <p>Operação assistida, monitoramento, novos casos de uso, expansão para outros domínios e canais. Evolução contínua da plataforma.</p>
+      <div class="dur">Ongoing</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <h2>Vamos juntos construir este futuro?</h2>
+  <div class="cta-text">O impacto no negócio e na operação é imediato. A Engineering tem a experiência, a plataforma e o time para levar sua organização para o real time de verdade.</div>
+  <a class="cta-btn" href="#">Falar com a Engineering &#8594;</a>
+  <div style="margin-top:16px;font-size:11px;color:var(--tx3)">Engineering do Brasil — The Digital Transformation Company</div>
+</section>
+
+<div class="footer">
+  Fast Data for AI — Engineering do Brasil | Abril 2026<br>
+  Dados de mercado: McKinsey, BCG, Bain, Gartner, Forrester, IDC, ISG
+</div>
+
+<!-- CROSS NAV -->
+<div style="position:fixed;bottom:16px;right:16px;z-index:999;display:flex;gap:6px;flex-wrap:wrap;max-width:380px">
+<a href="index.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#127760; Hub</a>
+<a href="onepage.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#127968; One-page</a>
+<a href="comparativo.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#128202; Comparativo</a>
+<a href="simulador.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#9889; Simulador</a>
+<a href="arquitetura.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#128736; Arquitetura</a>
+</div>
+</body>
+</html>
