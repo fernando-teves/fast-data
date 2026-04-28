@@ -4,27 +4,26 @@
 
 | Arquivo | Descrição | Uso |
 |---|---|---|
-| `index.html` | One-page comercial completa | Apresentação principal, link para compartilhar |
-| `comparativo.html` | Comparativo visual: 3 arquiteturas | Validação racional (BD Legado vs DL/DW vs Fast Data) |
-| `simulador.html` | Simulador interativo com chat | Demo ao vivo em reuniões (impacto visceral) |
-| `arquitetura.html` | Arquitetura detalhada em 6 camadas | Profundidade técnica para CTOs e arquitetos |
-
-## Navegação
-
-Todos os arquivos possuem navegação flutuante no canto inferior direito para transitar entre as páginas.
+| `index.html` | Hub — página inicial com cards de navegação | Entrada principal, link para compartilhar |
+| `onepage.html` | One-page comercial completa | Apresentação com todas as seções |
+| `comparativo.html` | Comparativo visual: 3 arquiteturas | BD Legado vs DL/DW vs Fast Data |
+| `simulador.html` | Simulador interativo com chat | Demo ao vivo em reuniões |
+| `arquitetura.html` | Arquitetura detalhada em 6 camadas | Profundidade técnica para CTOs |
 
 ## Deploy
 
-### Opção 1: Local (abrir direto)
-Basta abrir `index.html` no navegador.
-
-### Opção 2: GitHub Pages
 ```powershell
+cd C:\deploy\fast-data
 .\deploy.ps1
 ```
 
-### Opção 3: Qualquer web server
-Copie a pasta `fast-data/` para o root do servidor. Nenhuma dependência de backend — são arquivos HTML estáticos.
+## URLs
+
+- `https://fernando-teves.github.io/fast-data/` → Hub
+- `https://fernando-teves.github.io/fast-data/onepage.html` → One-page
+- `https://fernando-teves.github.io/fast-data/comparativo.html` → Comparativo
+- `https://fernando-teves.github.io/fast-data/simulador.html` → Simulador
+- `https://fernando-teves.github.io/fast-data/arquitetura.html` → Arquitetura
 
 ## Stack
 

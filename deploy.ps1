@@ -3,60 +3,66 @@
 # Engineering do Brasil
 # ============================================
 
-# Configurações — ajuste conforme necessário
-$REPO_URL = "https://github.com/fernando-teves/fast-data.git"  # URL do repositório Git
-$BRANCH   = "main"
+$REPO_NAME = "fast-data"
+$GITHUB_USER = "fernando-teves"
+$BRANCH = "main"
 $DEPLOY_DIR = "C:\deploy\fast-data"
 
 Write-Host ""
 Write-Host "============================================" -ForegroundColor Cyan
-Write-Host "  Fast Data for AI — Deploy" -ForegroundColor Cyan
+Write-Host "  Fast Data for AI - Deploy" -ForegroundColor Cyan
 Write-Host "  Engineering do Brasil" -ForegroundColor Cyan
 Write-Host "============================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Verificar se Git está instalado
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-    Write-Host "[ERRO] Git não encontrado. Instale o Git e tente novamente." -ForegroundColor Red
+    Write-Host "[ERRO] Git nao encontrado." -ForegroundColor Red
     exit 1
 }
 
-# Navegar para a pasta
 Set-Location $DEPLOY_DIR
-Write-Host "[1/5] Pasta: $DEPLOY_DIR" -ForegroundColor Yellow
 
-# Verificar se já é um repo Git
+Write-Host "[1/5] Arquivos em $DEPLOY_DIR" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "  index.html        - Hub" -ForegroundColor White
+Write-Host "  onepage.html      - One-page comercial" -ForegroundColor White
+Write-Host "  comparativo.html  - Comparativo" -ForegroundColor White
+Write-Host "  simulador.html    - Simulador" -ForegroundColor White
+Write-Host "  arquitetura.html  - Arquitetura" -ForegroundColor White
+Write-Host ""
+
 if (-not (Test-Path ".git")) {
-    Write-Host "[2/5] Inicializando repositório Git..." -ForegroundColor Yellow
+    Write-Host "[2/5] Inicializando repositorio Git..." -ForegroundColor Yellow
     git init
-    git remote add origin $REPO_URL
+    git branch -M $BRANCH
+    git remote add origin "https://github.com/$GITHUB_USER/$REPO_NAME.git"
 } else {
-    Write-Host "[2/5] Repositório Git já inicializado." -ForegroundColor Green
+    Write-Host "[2/5] Repo Git ja inicializado." -ForegroundColor Green
+    git remote set-url origin "https://github.com/$GITHUB_USER/$REPO_NAME.git" 2>$null
 }
 
-# Listar arquivos
-Write-Host ""
-Write-Host "Arquivos para deploy:" -ForegroundColor Cyan
-Get-ChildItem -Name *.html, *.md
-Write-Host ""
-
-# Stage, commit e push
 Write-Host "[3/5] Adicionando arquivos..." -ForegroundColor Yellow
 git add .
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
-$commitMsg = "deploy: Fast Data for AI — $timestamp"
-
+$commitMsg = "deploy: Fast Data for AI - $timestamp"
 Write-Host "[4/5] Commit: $commitMsg" -ForegroundColor Yellow
 git commit -m $commitMsg
 
-Write-Host "[5/5] Push para $BRANCH..." -ForegroundColor Yellow
+Write-Host "[5/5] Push para GitHub..." -ForegroundColor Yellow
 git push -u origin $BRANCH
 
 Write-Host ""
 Write-Host "============================================" -ForegroundColor Green
-Write-Host "  Deploy concluído com sucesso!" -ForegroundColor Green
+Write-Host "  Deploy concluido!" -ForegroundColor Green
 Write-Host "============================================" -ForegroundColor Green
 Write-Host ""
-Write-Host "Verifique em: $REPO_URL" -ForegroundColor Cyan
+Write-Host "  Repo: https://github.com/$GITHUB_USER/$REPO_NAME" -ForegroundColor Cyan
+Write-Host "  Site: https://$GITHUB_USER.github.io/$REPO_NAME/" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "  Hub:          /$REPO_NAME/" -ForegroundColor White
+Write-Host "  One-page:     /$REPO_NAME/onepage.html" -ForegroundColor White
+Write-Host "  Comparativo:  /$REPO_NAME/comparativo.html" -ForegroundColor White
+Write-Host "  Simulador:    /$REPO_NAME/simulador.html" -ForegroundColor White
+Write-Host "  Arquitetura:  /$REPO_NAME/arquitetura.html" -ForegroundColor White
 Write-Host ""
