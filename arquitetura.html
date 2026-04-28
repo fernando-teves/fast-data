@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Data for AI — Arquitetura Detalhada</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#060a10;--bg2:#0c1219;--bg3:#131c28;--bg4:#1a2537;
+  --card:#0e1520;--brd:#1a2640;--brd2:#253049;
+  --tx:#e8edf4;--tx2:#8b97a8;--tx3:#505d70;
+  --red:#f74a4a;--amb:#daa520;--grn:#34d399;--cyan:#22d3ee;
+  --pur:#a78bfa;--pink:#f472b6;--blue:#60a5fa;
+  --eng:#e91e8c;--eng-d:rgba(233,30,140,.06);
+  --grn-d:rgba(52,211,153,.06);--cyan-d:rgba(34,211,238,.06);
+  --pur-d:rgba(167,139,250,.06);--blue-d:rgba(96,165,250,.06);
+  --amb-d:rgba(218,165,32,.06);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+.wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+
+/* HEADER */
+.hdr{text-align:center;margin-bottom:28px;position:relative}
+.hdr::after{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(52,211,153,.04) 0%,transparent 65%);pointer-events:none}
+.hdr .tag{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--eng)}
+.hdr h1{font-size:clamp(22px,3.5vw,34px);font-weight:700;margin:6px 0 8px;background:linear-gradient(135deg,#fff 20%,var(--grn) 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr p{font-size:13px;color:var(--tx2);max-width:650px;margin:0 auto;line-height:1.6}
+
+/* TOGGLE */
+.toggles{display:flex;justify-content:center;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.tgl{font-family:inherit;font-size:10px;font-weight:600;padding:7px 14px;border-radius:6px;border:1px solid var(--brd2);background:var(--bg3);color:var(--tx3);cursor:pointer;transition:all .15s}
+.tgl:hover{color:var(--tx2);border-color:var(--tx3)}
+.tgl.on{background:var(--grn-d);border-color:var(--grn);color:var(--grn)}
+
+/* FLOW INDICATOR */
+.flow-dir{text-align:center;margin-bottom:16px}
+.flow-dir span{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);display:inline-flex;align-items:center;gap:6px}
+.flow-dir span::before,.flow-dir span::after{content:'';width:40px;height:1px;background:var(--brd2)}
+
+/* LAYERS */
+.layer{background:var(--card);border:1px solid var(--brd);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:all .3s}
+.layer:hover{border-color:var(--brd2)}
+.layer.expanded{border-color:var(--brd2)}
+
+.layer-top{display:flex;align-items:center;padding:16px 20px;cursor:pointer;gap:14px;user-select:none}
+.layer-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;flex-shrink:0;border:1px solid}
+.layer-info{flex:1;min-width:0}
+.layer-info h3{font-size:14px;font-weight:700;margin-bottom:2px}
+.layer-info p{font-size:11px;color:var(--tx3);line-height:1.4}
+.layer-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.layer-lat{text-align:right}
+.layer-lat .lv{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+.layer-lat .lu{font-size:8px;color:var(--tx3)}
+.layer-arrow{font-size:14px;color:var(--tx3);transition:transform .2s}
+.layer.expanded .layer-arrow{transform:rotate(90deg)}
+
+/* Layer detail */
+.layer-detail{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.layer.expanded .layer-detail{max-height:800px}
+.detail-inner{padding:0 20px 18px;border-top:1px solid var(--brd)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+@media(max-width:700px){.detail-grid{grid-template-columns:1fr}}
+
+.d-card{background:var(--bg2);border-radius:8px;padding:12px 14px}
+.d-card .dc-title{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.d-card .dc-title .ic{width:14px;height:14px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;flex-shrink:0}
+.d-card .dc-body{font-size:11px;color:var(--tx2);line-height:1.55}
+.d-card .dc-body strong{color:var(--tx);font-weight:600}
+
+.tech-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.pill{font-size:9px;font-weight:600;padding:3px 8px;border-radius:4px;border:1px solid var(--brd);background:var(--bg3);color:var(--tx2)}
+
+/* CONNECTOR LINES */
+.connector{display:flex;justify-content:center;padding:4px 0}
+.conn-line{display:flex;flex-direction:column;align-items:center;gap:0}
+.conn-line .dot{width:6px;height:6px;border-radius:50%;background:var(--grn);opacity:.4}
+.conn-line .line{width:1px;height:10px;background:var(--grn);opacity:.2}
+.conn-line .label{font-size:8px;color:var(--tx3);letter-spacing:.5px}
+
+/* SECURITY OVERLAY */
+.sec-bar{display:none;margin-top:8px;padding:10px 14px;background:rgba(233,30,140,.03);border:1px solid rgba(233,30,140,.12);border-radius:8px}
+.sec-bar.show{display:block}
+.sec-bar .sec-title{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--eng);margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.sec-bar .sec-body{font-size:10px;color:var(--tx2);line-height:1.5}
+
+/* LIFECYCLE BAR */
+.lifecycle{margin-top:20px;background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:20px}
+.lc-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);text-align:center;margin-bottom:14px}
+.lc-flow{display:flex;gap:8px;align-items:stretch}
+@media(max-width:700px){.lc-flow{flex-direction:column}}
+.lc-box{flex:1;border-radius:10px;padding:14px 16px;border:1px solid;position:relative}
+.lc-box .lc-h{font-size:12px;font-weight:700;margin-bottom:4px}
+.lc-box .lc-p{font-size:10px;line-height:1.5}
+.lc-box .lc-tech{font-family:'JetBrains Mono',monospace;font-size:9px;margin-top:6px;opacity:.7}
+.lc-hot{background:rgba(52,211,153,.04);border-color:rgba(52,211,153,.2)}
+.lc-hot .lc-h{color:var(--grn)}
+.lc-hot .lc-p{color:var(--tx2)}
+.lc-warm{background:rgba(218,165,32,.04);border-color:rgba(218,165,32,.15)}
+.lc-warm .lc-h{color:var(--amb)}
+.lc-warm .lc-p{color:var(--tx2)}
+.lc-cold{background:rgba(96,165,250,.03);border-color:rgba(96,165,250,.12)}
+.lc-cold .lc-h{color:var(--blue)}
+.lc-cold .lc-p{color:var(--tx2)}
+.lc-arrow-r{position:absolute;right:-14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--tx3);z-index:2}
+
+/* PATTERNS */
+.patterns{margin-top:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:700px){.patterns{grid-template-columns:1fr 1fr}}
+.pat{background:var(--bg2);border-radius:8px;padding:12px;text-align:center;border:1px solid var(--brd)}
+.pat .pat-n{font-size:11px;font-weight:700;margin-bottom:3px}
+.pat .pat-d{font-size:9px;color:var(--tx3);line-height:1.4}
+
+.footer{text-align:center;margin-top:28px;font-size:9px;color:var(--tx3);line-height:1.5}
+
+/* Color coding per layer */
+.l-src .layer-num{background:var(--blue-d);border-color:rgba(96,165,250,.25);color:var(--blue)}
+.l-src h3{color:var(--blue)}
+.l-src .layer-lat .lv{color:var(--blue)}
+
+.l-ing .layer-num{background:var(--grn-d);border-color:rgba(52,211,153,.25);color:var(--grn)}
+.l-ing h3{color:var(--grn)}
+.l-ing .layer-lat .lv{color:var(--grn)}
+
+.l-proc .layer-num{background:var(--cyan-d);border-color:rgba(34,211,238,.25);color:var(--cyan)}
+.l-proc h3{color:var(--cyan)}
+.l-proc .layer-lat .lv{color:var(--cyan)}
+
+.l-serv .layer-num{background:var(--pur-d);border-color:rgba(167,139,250,.25);color:var(--pur)}
+.l-serv h3{color:var(--pur)}
+.l-serv .layer-lat .lv{color:var(--pur)}
+
+.l-dhuo .layer-num{background:var(--eng-d);border-color:rgba(233,30,140,.25);color:var(--eng)}
+.l-dhuo h3{color:var(--eng)}
+.l-dhuo .layer-lat .lv{color:var(--eng)}
+
+.l-cons .layer-num{background:var(--amb-d);border-color:rgba(218,165,32,.2);color:var(--amb)}
+.l-cons h3{color:var(--amb)}
+.l-cons .layer-lat .lv{color:var(--amb)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <div class="tag">Engineering do Brasil — Fast Data for AI</div>
+  <h1>Arquitetura Fast Data</h1>
+  <p>Cada camada da plataforma de dados em tempo real. Clique para expandir detalhes de tecnologias, papel na pipeline, latência e segurança.</p>
+</div>
+
+<div class="toggles">
+  <button class="tgl on" onclick="toggleAll(this,'expand')">Expandir todas</button>
+  <button class="tgl" onclick="toggleAll(this,'collapse')">Recolher todas</button>
+  <button class="tgl" id="secToggle" onclick="toggleSec()">&#128274; Mostrar camada de segurança</button>
+</div>
+
+<div class="flow-dir"><span>Fluxo do dado: origem &#8594; ação</span></div>
+
+<!-- ===== LAYER 1: DATA SOURCES ===== -->
+<div class="layer l-src expanded" onclick="toggle(this)">
+  <div class="layer-top">
+    <div class="layer-num">01</div>
+    <div class="layer-info">
+      <h3>Data sources (origens de dados)</h3>
+      <p>Event producers — onde os dados nascem e são capturados em tempo real</p>
+    </div>
+    <div class="layer-right">
+      <div class="layer-lat"><div class="lv">0ms</div><div class="lu">origem</div></div>
+      <div class="layer-arrow">&#9654;</div>
+    </div>
+  </div>
+  <div class="layer-detail">
+    <div class="detail-inner">
+      <div class="detail-grid">
+        <div class="d-card">
+          <div class="dc-title"><div class="ic" style="background:var(--blue-d);color:var(--blue)">&#9881;</div>O que é</div>
+          <div class="dc-body">Todas as fontes de dados que alimentam a plataforma. No Fast Data, a captura é feita via <strong>Change Data Capture (CDC)</strong> em bancos de dados, <strong>webhooks</strong> de sistemas, <strong>sensores IoT</strong>, <strong>logs</strong> de aplicações e <strong>eventos</strong> de plataformas. Os dados são capturados <strong>no momento em que são gerados</strong>, não em janelas de batch.</div>
+        </div>
+        <div class="d-card">
+          <div class="dc-title"><div class="ic" style="background:var(--blue-d);color:var(--blue)">&#128268;</div>Fontes típicas</div>
+          <div class="dc-body">
+            <strong>CDC em bancos:</strong> Oracle, PostgreSQL, MySQL, SQL Server (via Debezium, Golden Gate)<br>
+            <strong>Sistemas:</strong> ERPs (SAP), CRMs (Salesforce), SaaS diversos<br>
+            <strong>IoT:</strong> sensores, telemetria, dispositivos de campo<br>
+            <strong>Logs:</strong> aplicações, infra, segurança<br>
+            <strong>Storage:</strong> buckets S3, GCS, Azure Blob (eventos de mudança)
+          </div>
+          <div class="tech-pills">
+            <span class="pill">Debezium</span><span class="pill">Golden Gate</span><span class="pill">MQTT</span><span class="pill">Webhooks</span><span class="pill">REST</span><span class="pill">gRPC</span>
+          </div>
+        </div>
+      </div>
+      <div class="sec-bar" id="sec1">
+        <div class="sec-title">&#128274; Segurança nesta camada</div>
+        <div class="sec-body">Autenticação na origem (credentials vault), criptografia em trânsito (TLS/mTLS), controle de acesso por conector. No DHuO, conectores nativos com políticas de segurança pré-configuradas.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="connector"><div class="conn-line"><div class="dot"></div><div class="line"></div><div class="label">streaming contínuo</div><div class="line"></div><div class="dot"></div></div></div>
+
+<!-- ===== LAYER 2: INGESTION ===== -->
+<div class="layer l-ing expanded" onclick="toggle(this)">
+  <div class="layer-top">
+    <div class="layer-num">02</div>
+    <div class="layer-info">
+      <h3>Ingestão de dados (streaming)</h3>
+      <p>Apache Kafka — barramento de eventos distribuído para captura e distribuição em tempo real</p>
+    </div>
+    <div class="layer-right">
+      <div class="layer-lat"><div class="lv">~5ms</div><div class="lu">latência acumulada</div></div>
+      <div class="layer-arrow">&#9654;</div>
+    </div>
+  </div>
+  <div class="layer-detail">
+    <div class="detail-inner">
+      <div class="detail-grid">
+        <div class="d-card">
+          <div class="dc-title"><div class="ic" style="background:var(--grn-d);color:var(--grn)">&#9881;</div>O que é</div>
+          <div class="dc-body">O <strong>Apache Kafka</strong> é o backbone de streaming do Fast Data. Ele recebe todos os eventos das fontes e os distribui para os consumidores downstream de forma <strong>ordenada, durável e escalável</strong>. Diferente de uma fila tradicional, o Kafka mantém um log imutável que permite <strong>event replay</strong> — recuperação de falhas sem perda de dados.</div>
+        </div>
+        <div class="d-card">
+          <div class="dc-title"><div class="ic" style="background:var(--grn-d);color:var(--grn)">&#128736;</div>Características</div>
+          <div class="dc-body">
+            <strong>Throughput:</strong> milhões de eventos/segundo por cluster<br>
+            <strong>Latência:</strong> sub-millisecond para produção de eventos<br>
+            <strong>Durabilidade:</strong> replicação multi-broker, persistência em disco<br>
+            <strong>Event replay:</strong> reprocessamento de eventos históricos sob demanda<br>
+            <strong>Conectores:</strong> Kafka Connect para integração com 100+ fontes/destinos
+          </div>
+          <div class="tech-pills">
+            <span class="pill">Apache Kafka</span><span class="pill">Kafka Connect</span><span class="pill">Schema Registry</span><span class="pill">Confluent</span><span class="pill">Amazon MSK</span>
+          </div>
+        </div>
+      </div>
+      <div class="sec-bar" id="sec2">
+        <div class="sec-title">&#128274; Segurança nesta camada</div>
+        <div class="sec-body">SASL/SCRAM ou mTLS para autenticação de produtores/consumidores. ACLs por tópico. Criptografia em trânsito (TLS) e opcionalmente at-rest. Schema Registry garante integridade dos contratos de dados.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="connector"><div class="conn-line"><div class="dot"></div><div class="line"></div><div class="label">stream processing</div><div class="line"></div><div class="dot"></div></div></div>
+
+<!-- ===== LAYER 3: PROCESSING ===== -->
+<div class="layer l-proc expanded" onclick="toggle(this)">
+  <div class="layer-top">
+    <div class="layer-num">03</div>
+    <div class="layer-info">
+      <h3>Processamento e análise (stream processing)</h3>
+      <p>Apache Flink / Spark Streaming — transformação, enriquecimento e analytics em tempo real</p>
+    </div>
+    <div class="layer-right">
+      <div class="layer-lat"><div class="lv">~15ms</div><div class="lu">latência acumulada</div></div>
+      <div class="layer-arrow">&#9654;</div>
+    </div>
+  </div>
+  <div class="layer-detail">
+    <div class="detail-inner">
+      <div class="detail-grid">
+        <div class="d-card">
+          <div class="dc-title"><div class="ic" style="background:var(--cyan-d);color:var(--cyan)">&#9881;</div>O que é</div>
+          <div class="dc-body">Camada onde os dados brutos são <strong>transformados, enriquecidos, filtrados e analisados</strong> em tempo real, enquanto fluem. Diferente do batch (onde você processa lotes acumulados), aqui cada evento é processado <strong>individualmente assim que chega</strong>. É onde rodam regras de negócio, detecção de anomalias, agregações em janelas temporais e cálculos de métricas.</div>
+        </div>
+        <div class="d-card">
+          <div class="dc-title"><div class="ic" style="background:var(--cyan-d);color:var(--cyan)">&#128736;</div>Capacidades</div>
+          <div class="dc-body">
+            <strong>Stream analytics:</strong> agregações, joins e windowing em tempo real<br>
+            <strong>CEP:</strong> Complex Event Processing (padrões em sequências de eventos)<br>
+            <strong>Enriquecimento:</strong> lookup em dados de referência para contexto<br>
+            <strong>Exatamente uma vez:</strong> exactly-once semantics (sem duplicatas)<br>
+            <strong>Estado:</strong> processamento stateful com checkpointing automático
+          </div>
+          <div class="tech-pills">
+            <span class="pill">Apache Flink</span><span class="pill">Spark Streaming</span><span class="pill">KSQL</span><span class="pill">Kafka Streams</span>
+          </div>
+        </div>
+      </div>
+      <div class="sec-bar" id="sec3">
+        <div class="sec-title">&#128274; Segurança nesta camada</div>
+        <div class="sec-body">Isolamento de jobs por namespace/tenant. Criptografia de estado em checkpoints. Controle de acesso a tópicos de entrada/saída. Mascaramento de dados sensíveis durante a transformação (PII/LGPD).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="connector"><div class="conn-line"><div class="dot"></div><div class="line"></div><div class="label">dados processados</div><div class="line"></div><div class="dot"></div></div></div>
+
+<!-- ===== LAYER 4: SERVING (IN-MEMORY) ===== -->
+<div class="layer l-serv expanded" onclick="toggle(this)">
+  <div class="layer-top">
+    <div class="layer-num">04</div>
+    <div class="layer-info">
+      <h3>Armazenamento rápido (serving layer)</h3>
+      <p>Bancos in-memory e NoSQL — dados de contexto disponíveis em milissegundos para consumo</p>
+    </div>
+    <div class="layer-right">
+      <div class="layer-lat"><div class="lv">~25ms</div><div class="lu">latência acumulada</div></div>
+      <div class="layer-arrow">&#9654;</div>
+    </div>
+  </div>
+  <div class="layer-detail">
+    <div class="detail-inner">
+      <div class="detail-grid">
+        <div class="d-card">
+          <div class="dc-title"><div class="ic" style="background:var(--pur-d);color:var(--pur)">&#9881;</div>O que é</div>
+          <div class="dc-body">Esta é a <strong>camada de contexto do Fast Data</strong> — o coração do conceito. Dados de curto prazo ficam aqui disponíveis para serviços, APIs, agentes de IA e aplicações. São dados <strong>quentes (hot data)</strong> que perdem valor com o tempo. Após o uso, podem ser persistidos no Data Lake ou banco legado para histórico. É armazenamento <strong>in-memory</strong>: leitura em sub-milissegundos.</div>
+        </div>
+        <div class="d-card">
+          <div class="dc-title"><div class="ic" style="background:var(--pur-d);color:var(--pur)">&#128736;</div>Tecnologias</div>
+          <div class="dc-body">
+            <strong>In-memory:</strong> Redis, Memcached, Hazelcast (sub-ms de leitura)<br>
+            <strong>NoSQL:</strong> MongoDB, Cassandra, DynamoDB (ms de leitura)<br>
+            <strong>TTL (Time to Live):</strong> dados expiram automaticamente após período configurável<br>
+            <strong>Padrão:</strong> dados quentes ficam disponíveis por minutos/horas, depois fluem para warm storage
+          </div>
+          <div class="tech-pills">
+            <span class="pill">Redis</span><span class="pill">Memcached</span><span class="pill">Hazelcast</span><span class="pill">MongoDB</span><span class="pill">Cassandra</span><span class="pill">DynamoDB</span>
+          </div>
+        </div>
+      </div>
+      <div class="sec-bar" id="sec4">
+        <div class="sec-title">&#128274; Segurança nesta camada</div>
+        <div class="sec-body">Criptografia at-rest (AES-256). Network isolation (VPC/private subnet). Autenticação por token/password. Dados sensíveis com mascaramento ou tokenização. TTL automático previne retenção indevida.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="connector"><div class="conn-line"><div class="dot" style="background:var(--eng)"></div><div class="line" style="background:var(--eng);opacity:.3"></div><div class="label">APIs governadas</div><div class="line" style="background:var(--eng);opacity:.3"></div><div class="dot" style="background:var(--eng)"></div></div></div>
+
+<!-- ===== LAYER 5: DHuO ===== -->
+<div class="layer l-dhuo expanded" onclick="toggle(this)">
+  <div class="layer-top">
+    <div class="layer-num">05</div>
+    <div class="layer-info">
+      <h3>DHuO — API Gateway, iPaaS e Governança</h3>
+      <p>Plataforma da Engineering para orquestração, exposição, segurança e governança de APIs, dados e AI</p>
+    </div>
+    <div class="layer-right">
+      <div class="layer-lat"><div class="lv">~40ms</div><div class="lu">latência acumulada</div></div>
+      <div class="layer-arrow">&#9654;</div>
+    </div>
+  </div>
+  <div class="layer-detail">
+    <div class="detail-inner">
+      <div class="detail-grid">
+        <div class="d-card">
+          <div class="dc-title"><div class="ic" style="background:var(--eng-d);color:var(--eng)">&#9881;</div>O que é</div>
+          <div class="dc-body">O <strong>DHuO</strong> é a plataforma proprietária da Engineering para integração de sistemas, dados e AI. No Fast Data, ele atua como a <strong>camada de exposição e governança</strong>: todas as APIs que servem dados em tempo real passam pelo DHuO, com autenticação, rate limiting, catálogo, observabilidade e audit trail. Também orquestra integrações via conectores nativos, MCP Server e protocolo A2A para agentes.</div>
+        </div>
+        <div class="d-card">
+          <div class="dc-title"><div class="ic" style="background:var(--eng-d);color:var(--eng)">&#128736;</div>Capacidades</div>
+          <div class="dc-body">
+            <strong>API Management:</strong> design, gateway, catálogo, developer portal<br>
+            <strong>iPaaS:</strong> orquestração no-code, conectores, multi-cloud<br>
+            <strong>AI Gateway:</strong> MCP Server, AI API Design, Agent Builder<br>
+            <strong>Data Integration:</strong> pipelines, data quality, data catalog<br>
+            <strong>Protocolos:</strong> REST, GraphQL, WebSocket, Webhooks, gRPC, events
+          </div>
+          <div class="tech-pills">
+            <span class="pill">DHuO</span><span class="pill">API Gateway</span><span class="pill">MCP Server</span><span class="pill">A2A Protocol</span><span class="pill">Agent Builder</span><span class="pill">AI Gateway</span>
+          </div>
+        </div>
+      </div>
+      <div class="sec-bar show" id="sec5">
+        <div class="sec-title">&#128274; Segurança nativa (DataSecOps)</div>
+        <div class="sec-body"><strong>Autenticação:</strong> OAuth2, JWT, API Keys, mTLS | <strong>Autorização:</strong> RBAC, scopes por API | <strong>Rate limiting:</strong> proteção contra DDoS e abuso | <strong>Audit trail:</strong> log de cada requisição com contexto completo | <strong>Criptografia:</strong> TLS em trânsito, at-rest configurável | <strong>Observabilidade:</strong> dashboards de uso, latência, erros e anomalias em tempo real</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="connector"><div class="conn-line"><div class="dot" style="background:var(--amb)"></div><div class="line" style="background:var(--amb);opacity:.3"></div><div class="label">dados acionáveis</div><div class="line" style="background:var(--amb);opacity:.3"></div><div class="dot" style="background:var(--amb)"></div></div></div>
+
+<!-- ===== LAYER 6: CONSUMPTION ===== -->
+<div class="layer l-cons expanded" onclick="toggle(this)">
+  <div class="layer-top">
+    <div class="layer-num">06</div>
+    <div class="layer-info">
+      <h3>Consumo e ação (output real time)</h3>
+      <p>BI, Machine Learning, Agentes de IA, ações automáticas — onde o dado vira valor de negócio</p>
+    </div>
+    <div class="layer-right">
+      <div class="layer-lat"><div class="lv">&lt;80ms</div><div class="lu">end-to-end</div></div>
+      <div class="layer-arrow">&#9654;</div>
+    </div>
+  </div>
+  <div class="layer-detail">
+    <div class="detail-inner">
+      <div class="detail-grid">
+        <div class="d-card">
+          <div class="dc-title"><div class="ic" style="background:var(--amb-d);color:var(--amb)">&#9881;</div>O que é</div>
+          <div class="dc-body">A camada onde dados em tempo real se transformam em <strong>ação imediata</strong>. Dashboards operacionais atualizados a cada segundo. Modelos de ML fazendo inferência sobre dados do presente. Agentes de IA com contexto completo e atualizado. Sistemas automatizados disparando ações sem intervenção humana. O dado sai da origem e chega aqui em <strong>menos de 80ms</strong>.</div>
+        </div>
+        <div class="d-card">
+          <div class="dc-title"><div class="ic" style="background:var(--amb-d);color:var(--amb)">&#128736;</div>Consumidores</div>
+          <div class="dc-body">
+            <strong>BI real time:</strong> dashboards operacionais (dataviz streaming)<br>
+            <strong>Machine Learning:</strong> modelos com feature store em tempo real<br>
+            <strong>Deep Learning / Visão Computacional:</strong> inferência online<br>
+            <strong>Agentes de IA:</strong> contexto atualizado via MCP + A2A<br>
+            <strong>Ações automáticas:</strong> alertas, bloqueios, triggers, notificações<br>
+            <strong>Apps e canais digitais:</strong> dados frescos em portais, apps, WhatsApp
+          </div>
+        </div>
+      </div>
+      <div class="sec-bar" id="sec6">
+        <div class="sec-title">&#128274; Segurança nesta camada</div>
+        <div class="sec-body">Controle de acesso por consumidor/aplicação. Scopes e permissões por API. Audit trail de quem consumiu o quê e quando. Anonimização para BI público. Compliance LGPD/GDPR no output.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIFECYCLE -->
+<div class="lifecycle">
+  <div class="lc-title">Ciclo de vida do dado</div>
+  <div class="lc-flow">
+    <div class="lc-box lc-hot">
+      <div class="lc-h">&#9889; Hot — Fast Data</div>
+      <div class="lc-p">Dados de contexto de curto prazo. Disponíveis em milissegundos para serviços, AI e BI. Expiram via TTL após uso.</div>
+      <div class="lc-tech">Redis, Hazelcast, Kafka | &lt;100ms | minutos a horas</div>
+      <span class="lc-arrow-r">&#8594;</span>
+    </div>
+    <div class="lc-box lc-warm">
+      <div class="lc-h">&#128451; Warm — Data Lake / DW</div>
+      <div class="lc-p">Dados persistidos para análise histórica, consolidação e treinamento de modelos. Incremental, ~1min a 24h+.</div>
+      <div class="lc-tech">S3, BigQuery, Snowflake, Databricks | min–horas | meses</div>
+      <span class="lc-arrow-r">&#8594;</span>
+    </div>
+    <div class="lc-box lc-cold">
+      <div class="lc-h">&#128451; Cold — Legado / Arquivo</div>
+      <div class="lc-p">Dados transacionais, compliance e arquivo de longo prazo. Persistência definitiva em bancos legados ou cold storage.</div>
+      <div class="lc-tech">Oracle, SQL Server, Glacier, Archive | horas–dias | anos</div>
+    </div>
+  </div>
+</div>
+
+<!-- ARCHITECTURE PATTERNS -->
+<div style="margin-top:20px">
+  <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);text-align:center;margin-bottom:10px">Padrões arquiteturais suportados</div>
+  <div class="patterns">
+    <div class="pat"><div class="pat-n" style="color:var(--grn)">Event-Driven</div><div class="pat-d">Arquitetura orientada a eventos. Cada mudança gera um evento imutável no Kafka.</div></div>
+    <div class="pat"><div class="pat-n" style="color:var(--cyan)">Kappa</div><div class="pat-d">Stream-only. Todo processamento via streaming, sem camada batch separada.</div></div>
+    <div class="pat"><div class="pat-n" style="color:var(--pur)">Lambda</div><div class="pat-d">Batch + speed layer. Para cenários que exigem ambas as modalidades coexistindo.</div></div>
+    <div class="pat"><div class="pat-n" style="color:var(--blue)">Data Mesh</div><div class="pat-d">Federado por domínio. Cada área é responsável por seus data products em streaming.</div></div>
+  </div>
+</div>
+
+<div class="footer">
+  Engineering do Brasil — Fast Data for AI, Arquitetura Detalhada | Abril 2026<br>
+  Baseado na oferta Fast Data v1.2 e capacidades da plataforma DHuO.
+</div>
+
+</div>
+
+<script>
+function toggle(el){
+  // Don't toggle if clicking inside detail
+  if(event.target.closest('.layer-detail'))return;
+  el.classList.toggle('expanded');
+}
+
+function toggleAll(btn,action){
+  document.querySelectorAll('.tgl').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.layer').forEach(l=>{
+    if(action==='expand') l.classList.add('expanded');
+    else l.classList.remove('expanded');
+  });
+}
+
+let secVisible=false;
+function toggleSec(){
+  secVisible=!secVisible;
+  const btn=document.getElementById('secToggle');
+  btn.classList.toggle('on',secVisible);
+  btn.textContent=secVisible?'🔐 Ocultar segurança':'🔐 Mostrar camada de segurança';
+  // sec5 (DHuO) always shows — it's native
+  for(let i=1;i<=6;i++){
+    if(i===5)continue;
+    const el=document.getElementById('sec'+i);
+    if(el)el.classList.toggle('show',secVisible);
+  }
+}
+</script>
+<!-- CROSS NAV -->
+<div style="position:fixed;bottom:16px;right:16px;z-index:999;display:flex;gap:6px;flex-wrap:wrap;max-width:340px">
+<a href="index.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#127968; One-page</a>
+<a href="comparativo.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#128202; Comparativo</a>
+<a href="simulador.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#9889; Simulador</a>
+<a href="arquitetura.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#128736; Arquitetura</a>
+</div>
+</body>
+</html>

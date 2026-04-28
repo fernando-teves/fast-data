@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Data — Simulador de Request</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#060a10;--bg2:#0c1219;--bg3:#131c28;--bg4:#1a2537;
+  --card:#0e1520;--brd:#1a2640;--brd2:#243352;
+  --tx:#e8edf4;--tx2:#8b97a8;--tx3:#505d70;
+  --red:#f74a4a;--red-d:rgba(247,74,74,.1);--red-g:rgba(247,74,74,.3);
+  --amb:#daa520;--amb-d:rgba(218,165,32,.1);--amb-g:rgba(218,165,32,.25);
+  --grn:#34d399;--grn-d:rgba(52,211,153,.08);--grn-g:rgba(52,211,153,.25);
+  --cyan:#22d3ee;--pur:#a78bfa;
+  --eng:#e91e8c;--eng-d:rgba(233,30,140,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+.wrap{max-width:1260px;margin:0 auto;padding:16px 16px 40px}
+
+/* HEADER */
+.hdr{text-align:center;margin-bottom:16px}
+.hdr .tag{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--eng)}
+.hdr h1{font-size:clamp(18px,2.8vw,26px);font-weight:700;margin-top:4px;background:linear-gradient(135deg,#fff 30%,var(--eng));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr p{font-size:11px;color:var(--tx3);margin-top:3px}
+
+/* MAIN GRID */
+.main{display:grid;grid-template-columns:300px 1fr;gap:12px}
+@media(max-width:860px){.main{grid-template-columns:1fr;grid-template-rows:auto auto}}
+
+/* ====== CHAT ====== */
+.chat{background:var(--card);border:1px solid var(--brd);border-radius:12px;display:flex;flex-direction:column;max-height:640px;min-height:500px}
+.chat-hdr{padding:12px 14px;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:8px}
+.av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--eng),var(--pur));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.chat-hdr .nm{font-size:11px;font-weight:600}
+.chat-hdr .st{font-size:8px;color:var(--grn);display:flex;align-items:center;gap:3px}
+.chat-hdr .st::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--grn)}
+
+.chat-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:7px;scroll-behavior:smooth}
+
+/* Messages */
+.m{max-width:92%;padding:9px 12px;border-radius:10px;font-size:11px;line-height:1.55;animation:mIn .35s ease both}
+.m.sys{background:var(--bg3);color:var(--tx2);align-self:flex-start;border-bottom-left-radius:3px}
+.m.usr{background:var(--eng-d);border:1px solid rgba(233,30,140,.15);color:var(--tx);align-self:flex-end;border-bottom-right-radius:3px}
+
+.m.r3{align-self:flex-start;background:var(--grn-d);border:1px solid rgba(52,211,153,.15);border-bottom-left-radius:3px}
+.m.r1{align-self:flex-start;background:var(--red-d);border:1px solid rgba(247,74,74,.12);border-bottom-left-radius:3px}
+.m.r2{align-self:flex-start;background:var(--amb-d);border:1px solid rgba(218,165,32,.12);border-bottom-left-radius:3px}
+
+.m .mtag{font-size:8px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.m .mtag .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.m .mtag .dot.dg{background:var(--grn)}.m .mtag .dot.dr{background:var(--red)}.m .mtag .dot.da{background:var(--amb)}
+.m .mbody{color:var(--tx2)}
+.m .mtime{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;margin-top:5px;display:flex;align-items:center;gap:4px}
+.m.r3 .mtime{color:var(--grn)}.m.r1 .mtime{color:var(--red)}.m.r2 .mtime{color:var(--amb)}
+.m.r3 .mtag{color:var(--grn)}.m.r1 .mtag{color:var(--red)}.m.r2 .mtag{color:var(--amb)}
+
+/* Typing indicator */
+.typing{display:flex;gap:4px;padding:6px 12px;align-self:flex-start;min-height:26px}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--tx3);animation:dot .8s ease infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+
+/* Processing indicator */
+.processing{align-self:flex-start;padding:6px 12px;font-size:9px;color:var(--tx3);display:flex;align-items:center;gap:6px;animation:mIn .3s ease}
+.spin{width:12px;height:12px;border:1.5px solid var(--brd2);border-top-color:var(--grn);border-radius:50%;animation:spin .6s linear infinite}
+
+.chat-input{padding:10px 12px;border-top:1px solid var(--brd)}
+.chat-input .hint{font-size:8px;color:var(--tx3);letter-spacing:.5px;margin-bottom:5px}
+.rbtns{display:flex;flex-wrap:wrap;gap:4px}
+.rb{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;padding:7px 10px;border-radius:6px;border:1px solid var(--brd2);background:var(--bg3);color:var(--tx2);cursor:pointer;transition:all .15s;text-align:left;line-height:1.3}
+.rb:hover{border-color:var(--eng);color:var(--tx);background:var(--eng-d)}
+.rb:disabled{opacity:.35;cursor:not-allowed;border-color:var(--brd2);color:var(--tx3);background:var(--bg3)}
+
+/* ====== LANES ====== */
+.lanes{background:var(--card);border:1px solid var(--brd);border-radius:12px;display:flex;flex-direction:column;min-height:500px}
+.lanes-hdr{padding:10px 14px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.lanes-hdr .lt{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3)}
+.lanes-hdr .legend{display:flex;gap:10px}
+.lanes-hdr .lg{display:flex;align-items:center;gap:4px;font-size:8px;color:var(--tx3)}
+.lanes-hdr .lg .d{width:6px;height:6px;border-radius:2px}
+
+/* Idle state message */
+.idle-msg{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;color:var(--tx3);font-size:12px;line-height:1.6}
+.idle-msg.hidden{display:none}
+
+.lane-area{flex:1;display:grid;grid-template-rows:1fr 1fr 1fr;display:none}
+.lane-area.active{display:grid}
+
+.lane{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--brd);position:relative;overflow:hidden}
+.lane:last-child{border-bottom:none}
+
+.ll{width:90px;flex-shrink:0}
+.ll .ln{font-size:10px;font-weight:700}
+.ll .ls{font-size:7px;color:var(--tx3);margin-top:1px;letter-spacing:.3px}
+.ll.red .ln{color:var(--red)}.ll.amb .ln{color:var(--amb)}.ll.grn .ln{color:var(--grn)}
+
+.pipe{flex:1;height:60px;position:relative;margin:0 6px}
+.pipe-track{position:absolute;top:50%;left:0;right:0;height:2px;transform:translateY(-50%);background:var(--brd);border-radius:1px}
+
+/* Nodes */
+.nd{position:absolute;top:50%;transform:translate(-50%,-50%);height:30px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-size:7.5px;font-weight:600;letter-spacing:.2px;padding:0 7px;white-space:nowrap;border:1px solid;transition:all .25s;z-index:2}
+.nd.idle{background:var(--bg2);border-color:var(--brd);color:var(--tx3)}
+.nd.on{animation:ndOn .3s ease forwards}
+.nd.ok{background:var(--grn-d);border-color:var(--grn);color:var(--grn)}
+.nd.slow{background:var(--amb-d);border-color:var(--amb);color:var(--amb)}
+.nd.err{background:var(--red-d);border-color:var(--red);color:var(--red)}
+.nd.block{background:var(--red-d);border-color:var(--red);color:var(--red);animation:shake .25s ease infinite}
+.nd.wait{background:var(--amb-d);border-color:var(--amb);color:var(--amb);animation:pulse 1s ease infinite}
+
+/* Packet */
+.pk{position:absolute;top:50%;width:7px;height:7px;border-radius:50%;transform:translate(-50%,-50%);z-index:5}
+.pk.r{background:var(--red);box-shadow:0 0 10px var(--red-g)}
+.pk.a{background:var(--amb);box-shadow:0 0 10px var(--amb-g)}
+.pk.g{background:var(--grn);box-shadow:0 0 10px var(--grn-g)}
+
+/* Lane latency */
+.ll-lat{width:80px;flex-shrink:0;text-align:right}
+.ll-lat .lv{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;transition:color .2s}
+.ll-lat .lu{font-size:7px;color:var(--tx3);margin-top:1px;display:block;line-height:1.3}
+.ll-lat.red .lv{color:var(--red)}.ll-lat.amb .lv{color:var(--amb)}.ll-lat.grn .lv{color:var(--grn)}
+
+/* Status badge */
+.sbadge{position:absolute;right:6px;top:5px;font-size:7px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:2px 6px;border-radius:3px;opacity:0;transition:opacity .3s}
+.sbadge.show{opacity:1}
+.sbadge.ok{background:var(--grn-d);color:var(--grn)}
+.sbadge.slow{background:var(--amb-d);color:var(--amb)}
+.sbadge.fail{background:var(--red-d);color:var(--red)}
+
+@keyframes mIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dot{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes ndOn{0%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.1)}100%{transform:translate(-50%,-50%) scale(1)}}
+@keyframes shake{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% - 2px),-50%)}75%{transform:translate(calc(-50% + 2px),-50%)}}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="hdr">
+    <div class="tag">Engineering do Brasil — Fast Data for AI</div>
+    <h1>Simulador: mesmo request, 3 arquiteturas</h1>
+    <p>Selecione uma solicita&ccedil;&atilde;o e veja cada resposta chegar no chat conforme a arquitetura finaliza</p>
+  </div>
+
+  <div class="main">
+    <!-- CHAT -->
+    <div class="chat">
+      <div class="chat-hdr">
+        <div class="av">C</div>
+        <div>
+          <div class="nm">Canal digital (cliente)</div>
+          <div class="st">Online</div>
+        </div>
+      </div>
+      <div class="chat-body" id="cb">
+        <div class="m sys">Selecione uma solicita&ccedil;&atilde;o abaixo. Cada arquitetura vai processar o request e responder no chat <strong>conforme termina</strong>.</div>
+      </div>
+      <div class="chat-input">
+        <div class="hint">Cen&aacute;rios de uso:</div>
+        <div class="rbtns" id="rbtns">
+          <button class="rb" onclick="go(0)">&#9889; 2&ordf; via de fatura</button>
+          <button class="rb" onclick="go(1)">&#128274; Detectar fraude</button>
+          <button class="rb" onclick="go(2)">&#128666; Rastrear entrega</button>
+          <button class="rb" onclick="go(3)">&#128200; Dashboard opera&ccedil;&atilde;o</button>
+          <button class="rb" onclick="go(4)">&#129302; Agente IA</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LANES -->
+    <div class="lanes">
+      <div class="lanes-hdr">
+        <div class="lt">Pipeline de processamento</div>
+        <div class="legend">
+          <div class="lg"><div class="d" style="background:var(--red)"></div>Legado</div>
+          <div class="lg"><div class="d" style="background:var(--amb)"></div>DL/DW</div>
+          <div class="lg"><div class="d" style="background:var(--grn)"></div>Fast Data</div>
+        </div>
+      </div>
+
+      <div class="idle-msg" id="idleMsg">Selecione um cen&aacute;rio no chat<br>para iniciar a simula&ccedil;&atilde;o &#8594;</div>
+
+      <div class="lane-area" id="laneArea">
+        <!-- Lane 1: Legacy -->
+        <div class="lane" id="lane1">
+          <div class="ll red"><div class="ln">BD Legado</div><div class="ls">OLTP direto</div></div>
+          <div class="pipe" id="pipe1">
+            <div class="pipe-track"></div>
+            <div class="nd idle" id="n1a" style="left:12%">App</div>
+            <div class="nd idle" id="n1b" style="left:32%">API</div>
+            <div class="nd idle" id="n1c" style="left:55%">BD Prod</div>
+            <div class="nd idle" id="n1d" style="left:78%">Resp</div>
+          </div>
+          <div class="ll-lat red" id="lt1"><div class="lv">—</div><div class="lu">aguardando</div></div>
+          <div class="sbadge" id="sb1"></div>
+        </div>
+        <!-- Lane 2: DL/DW -->
+        <div class="lane" id="lane2">
+          <div class="ll amb"><div class="ln">DL / DW</div><div class="ls">Batch incremental</div></div>
+          <div class="pipe" id="pipe2">
+            <div class="pipe-track"></div>
+            <div class="nd idle" id="n2a" style="left:7%">Src</div>
+            <div class="nd idle" id="n2b" style="left:22%">ETL</div>
+            <div class="nd idle" id="n2c" style="left:38%">Lake</div>
+            <div class="nd idle" id="n2d" style="left:54%">DQ</div>
+            <div class="nd idle" id="n2e" style="left:70%">DW</div>
+            <div class="nd idle" id="n2f" style="left:88%">BI</div>
+          </div>
+          <div class="ll-lat amb" id="lt2"><div class="lv">—</div><div class="lu">aguardando</div></div>
+          <div class="sbadge" id="sb2"></div>
+        </div>
+        <!-- Lane 3: Fast Data -->
+        <div class="lane" id="lane3">
+          <div class="ll grn"><div class="ln">Fast Data</div><div class="ls">Stream + DHuO</div></div>
+          <div class="pipe" id="pipe3">
+            <div class="pipe-track"></div>
+            <div class="nd idle" id="n3a" style="left:7%">CDC</div>
+            <div class="nd idle" id="n3b" style="left:22%">Kafka</div>
+            <div class="nd idle" id="n3c" style="left:38%">Flink</div>
+            <div class="nd idle" id="n3d" style="left:54%">Redis</div>
+            <div class="nd idle" id="n3e" style="left:70%">DHuO</div>
+            <div class="nd idle" id="n3f" style="left:88%">AI</div>
+          </div>
+          <div class="ll-lat grn" id="lt3"><div class="lv">—</div><div class="lu">aguardando</div></div>
+          <div class="sbadge" id="sb3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SC=[
+  {
+    q:"2ª via de fatura", icon:"⚡",
+    m3:{lat:62, resp:"2ª via gerada com dados atualizados há <strong>62ms</strong>. Pronta para download e envio por WhatsApp.", steps:[8,15,25,38,50,62]},
+    m1:{lat:3200, block:2, blockLabel:"Lock!", resp:"Timeout após <strong>3.2s</strong>. BD sobrecarregado com queries concorrentes. Tente novamente.", steps:[120,400,2800,3200]},
+    m2:{resp:"Fatura disponível, porém com dados de <strong>~6h atrás</strong>. Pode não refletir pagamentos recentes.", steps:[200,1200,2000,3000,4000,5000]}
+  },
+  {
+    q:"Detectar fraude em tempo real", icon:"🔐",
+    m3:{lat:45, resp:"Score de fraude: <strong>0.92</strong> (alto risco). Transação bloqueada automaticamente em <strong>45ms</strong>.", steps:[5,12,22,30,38,45]},
+    m1:{lat:4500, block:2, blockLabel:"Deadlock", resp:"Deadlock no BD de produção. Fraude <strong>não detectada</strong> a tempo. Transação já foi aprovada.", steps:[100,500,3800,4500]},
+    m2:{resp:"Modelo de fraude rodou sobre dados do batch anterior (<strong>~2h atrás</strong>). Fraude pode já ter ocorrido.", steps:[300,1500,2500,3500,4200,5200]}
+  },
+  {
+    q:"Rastrear entrega", icon:"🚚",
+    m3:{lat:38, resp:"Pedido #4821: veículo a <strong>2.3km</strong>. ETA: 4 minutos. Dados IoT de <strong>38ms</strong> atrás.", steps:[4,10,18,25,32,38]},
+    m1:{lat:1800, block:2, blockLabel:"Contenção", resp:"Resposta em <strong>1.8s</strong>. Dados de tracking no mesmo BD transacional. Posição pode estar desatualizada.", steps:[80,300,1500,1800]},
+    m2:{resp:"Última posição conhecida: <strong>~30min atrás</strong>. Veículo pode já ter chegado.", steps:[150,800,1500,2200,3000,3800]}
+  },
+  {
+    q:"Dashboard de operação", icon:"📈",
+    m3:{lat:78, resp:"KPIs atualizados: <strong>1.247 pedidos/min</strong>, SLA 99.2%, 3 alertas ativos. Dados de <strong>78ms</strong>.", steps:[8,18,32,48,62,78]},
+    m1:{lat:5000, block:2, blockLabel:"Pool cheio", resp:"Dashboard <strong>travou</strong>. Connection pool esgotado por queries agregadas concorrentes.", steps:[150,600,4200,5000]},
+    m2:{resp:"Dashboard exibindo dados consolidados <strong>D-1</strong>. Decisões sendo tomadas sobre o passado.", steps:[200,1000,2000,3000,4000,5000]}
+  },
+  {
+    q:"Agente IA: recomendação", icon:"🤖",
+    m3:{lat:88, resp:"Recomendação personalizada gerada em <strong>88ms</strong> com contexto atual: produto X com 23% mais relevância.", steps:[6,16,30,48,68,88]},
+    m1:{lat:null, block:2, blockLabel:"Sem dados", resp:"Agente <strong>sem acesso</strong> a dados contextuais em tempo real. Recomendação impossível.", steps:[100,400,3000,4000]},
+    m2:{resp:"Recomendação baseada em perfil de <strong>~12h atrás</strong>. Pouca personalização, pode gerar churn.", steps:[250,1200,2200,3200,4200,5200]}
+  }
+];
+
+let busy=false;
+const cb=document.getElementById('cb');
+
+function msg(cls,html){
+  const d=document.createElement('div');
+  d.className='m '+cls;
+  d.innerHTML=html;
+  cb.appendChild(d);
+  cb.scrollTop=cb.scrollHeight;
+  return d;
+}
+
+function addProcessing(text){
+  const d=document.createElement('div');
+  d.className='processing';
+  d.innerHTML='<div class="spin"></div>'+text;
+  d.id='proc_'+Date.now();
+  cb.appendChild(d);
+  cb.scrollTop=cb.scrollHeight;
+  return d;
+}
+
+function respMsg(cls, tagColor, tagLabel, body, timeLabel, timeColor){
+  return `<div class="mtag"><div class="dot ${tagColor}"></div>${tagLabel}</div><div class="mbody">${body}</div><div class="mtime">${timeLabel}</div>`;
+}
+
+function setNd(id,st,label){const e=document.getElementById(id);if(!e)return;e.className='nd '+st;if(label)e.textContent=label}
+function setLat(n,v,u){const e=document.getElementById('lt'+n);e.querySelector('.lv').textContent=v;e.querySelector('.lu').innerHTML=u}
+function showBadge(n,t,txt){const e=document.getElementById('sb'+n);e.textContent=txt;e.className='sbadge show '+t}
+function fmtLat(ms){return ms<1000?ms+'ms':(ms/1000).toFixed(1)+'s'}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+function makePkt(pipe,c){
+  const d=document.createElement('div');
+  d.className='pk '+c;d.style.left='0%';d.style.top='50%';
+  document.getElementById(pipe).appendChild(d);return d
+}
+function movePkt(d,to,dur){
+  return new Promise(r=>{
+    d.style.transition=`left ${dur}ms linear`;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{d.style.left=to+'%';setTimeout(r,dur)}))
+  })
+}
+
+function resetLanes(){
+  document.querySelectorAll('.nd').forEach(n=>{n.className='nd idle'});
+  document.querySelectorAll('.pk').forEach(p=>p.remove());
+  for(let i=1;i<=3;i++){setLat(i,'—','aguardando');const s=document.getElementById('sb'+i);s.className='sbadge';s.textContent=''}
+  document.getElementById('idleMsg').classList.add('hidden');
+  document.getElementById('laneArea').classList.add('active');
+}
+
+// ====== LANE RUNNERS (each returns a Promise, posts to chat when done) ======
+
+async function runFastData(sc){
+  const pk=makePkt('pipe3','g');
+  const nds=['n3a','n3b','n3c','n3d','n3e','n3f'];
+  const pos=[7,22,38,54,70,88];
+  const steps=sc.m3.steps;
+  let el=0;
+  for(let i=0;i<nds.length;i++){
+    const dur=steps[i]-el;
+    await movePkt(pk,pos[i],dur*7+30);
+    setNd(nds[i],'ok');
+    el=steps[i];
+    setLat(3,el+'ms','');
+  }
+  pk.remove();
+  setLat(3,sc.m3.lat+'ms','✓ real time');
+  showBadge(3,'ok','REAL TIME');
+
+  // Post response to chat immediately
+  msg('r3', respMsg('r3','dg','Fast Data (ENG)',sc.m3.resp,'✓ '+sc.m3.lat+'ms','grn'));
+}
+
+async function runLegacy(sc){
+  const pk=makePkt('pipe1','r');
+  const nds=['n1a','n1b','n1c','n1d'];
+  const pos=[12,32,55,78];
+  const steps=sc.m1.steps;
+  const blockAt=sc.m1.block;
+  let el=0;
+  for(let i=0;i<nds.length;i++){
+    const dur=steps[i]-el;
+    const from=i===0?0:pos[i-1];
+    if(i===blockAt){
+      await movePkt(pk,pos[i],Math.min(dur*2.5,2200));
+      setNd(nds[i],'block',sc.m1.blockLabel);
+      setLat(1,fmtLat(steps[i]),'⚠ gargalo');
+      await sleep(1500);
+      setNd(nds[i],'err',sc.m1.blockLabel);
+    } else if(i>blockAt){
+      await movePkt(pk,pos[i],350);
+      setNd(nds[i],'err');
+    } else {
+      await movePkt(pk,pos[i],dur*4+50);
+      setNd(nds[i],'err');
+    }
+    el=steps[i];
+    if(i<blockAt)setLat(1,fmtLat(el),'');
+  }
+  pk.remove();
+  const latTxt=sc.m1.lat?fmtLat(sc.m1.lat):'FALHA';
+  setLat(1,latTxt,'✗ erro');
+  showBadge(1,'fail',sc.m1.lat?'TIMEOUT':'FALHA');
+
+  // Post to chat
+  const timeStr=sc.m1.lat?'✗ '+fmtLat(sc.m1.lat):'✗ Falha total';
+  msg('r1', respMsg('r1','dr','BD Legado',sc.m1.resp,timeStr,'red'));
+}
+
+async function runDLDW(sc){
+  const pk=makePkt('pipe2','a');
+  const nds=['n2a','n2b','n2c','n2d','n2e','n2f'];
+  const pos=[7,22,38,54,70,88];
+  const steps=sc.m2.steps;
+  let el=0;
+  for(let i=0;i<nds.length;i++){
+    const dur=steps[i]-el;
+    const from=i===0?0:pos[i-1];
+    if(i===1){
+      // ETL node — slow
+      await movePkt(pk,pos[i],1600);
+      setNd(nds[i],'wait','ETL ⏳');
+      setLat(2,'batch...','⏳ aguardando ETL');
+      await sleep(1200);
+      setNd(nds[i],'slow','ETL');
+    } else {
+      await movePkt(pk,pos[i],Math.min(dur*3,500));
+      setNd(nds[i],'slow');
+    }
+    el=steps[i];
+    if(i>1)setLat(2,'processando','camada '+(i+1)+'/6');
+  }
+  pk.remove();
+  setLat(2,'~1min–24h+','⚠ defasado');
+  showBadge(2,'slow','DEFASADO');
+
+  // Post to chat
+  msg('r2', respMsg('r2','da','Data Lake / DW',sc.m2.resp,'⚠ Dados defasados','amb'));
+}
+
+// ====== MAIN ======
+
+async function go(idx){
+  if(busy)return;
+  busy=true;
+  document.querySelectorAll('.rb').forEach(b=>b.disabled=true);
+  const sc=SC[idx];
+
+  // User message
+  msg('usr', sc.icon+' '+sc.q);
+  await sleep(250);
+
+  resetLanes();
+
+  // Processing indicator
+  const proc=addProcessing('Processando nos 3 cenários...');
+
+  // Run all 3 simultaneously — each posts its own response when done
+  await Promise.all([
+    runFastData(sc),  // finishes first (~62-88ms simulated)
+    runLegacy(sc),    // finishes second (~1.8-5s simulated)
+    runDLDW(sc)       // finishes last (batch)
+  ]);
+
+  proc.remove();
+
+  await sleep(500);
+  msg('sys','Pronto! O Fast Data respondeu enquanto os outros ainda processavam. Selecione outro cenário para comparar.');
+
+  document.querySelectorAll('.rb').forEach(b=>b.disabled=false);
+  busy=false;
+}
+</script>
+<!-- CROSS NAV -->
+<div style="position:fixed;bottom:16px;right:16px;z-index:999;display:flex;gap:6px;flex-wrap:wrap;max-width:340px">
+<a href="index.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#127968; One-page</a>
+<a href="comparativo.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#128202; Comparativo</a>
+<a href="simulador.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#9889; Simulador</a>
+<a href="arquitetura.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#128736; Arquitetura</a>
+</div>
+</body>
+</html>

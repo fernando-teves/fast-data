@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Data for AI — Comparativo de Arquiteturas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #06090f;
+  --bg2: #0d1117;
+  --bg3: #161b22;
+  --bg4: #1c2333;
+  --card: #0d1117;
+  --border: #1b2536;
+  --border2: #253049;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #484f58;
+  --red: #f85149;
+  --red-dim: rgba(248,81,73,0.12);
+  --amber: #d29922;
+  --amber-dim: rgba(210,153,34,0.12);
+  --green: #3fb950;
+  --green-dim: rgba(63,185,80,0.12);
+  --cyan: #39d2c0;
+  --purple: #a371f7;
+  --pink: #f778ba;
+  --eng: #e91e8c;
+  --eng-dim: rgba(233,30,140,0.1);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* HERO */
+.hero{text-align:center;padding:52px 24px 20px;position:relative}
+.hero::after{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:800px;height:500px;background:radial-gradient(ellipse,rgba(233,30,140,0.05)0%,transparent 65%);pointer-events:none}
+.hero-tag{font-size:10px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:var(--eng);margin-bottom:14px;display:inline-flex;align-items:center;gap:6px}
+.hero-tag::before,.hero-tag::after{content:'';width:20px;height:1px;background:var(--eng);opacity:.4}
+.hero h1{font-size:clamp(26px,4.2vw,44px);font-weight:700;line-height:1.12;margin-bottom:10px;background:linear-gradient(135deg,#fff 20%,var(--eng) 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:14px;color:var(--text2);max-width:600px;margin:0 auto;line-height:1.65}
+
+/* CONTROLS */
+.ctrl{display:flex;justify-content:center;gap:10px;padding:20px 24px 28px;flex-wrap:wrap}
+.btn{font-family:inherit;font-size:12px;font-weight:600;padding:9px 18px;border-radius:7px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .15s}
+.btn:hover{border-color:var(--text3);color:var(--text)}
+.btn.go{background:var(--green);color:#000;border-color:var(--green);font-weight:700}
+.btn.go:hover{background:#2ea043}
+
+/* DATA LIFECYCLE BAR */
+.lifecycle{max-width:900px;margin:0 auto 32px;padding:0 24px}
+.lc-bar{display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.lc-seg{flex:1;padding:14px 16px;text-align:center;position:relative}
+.lc-seg:not(:last-child){border-right:1px solid var(--border)}
+.lc-seg .lc-icon{font-size:18px;margin-bottom:4px}
+.lc-seg .lc-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.lc-seg .lc-desc{font-size:10px;color:var(--text3);line-height:1.4}
+.lc-hot{background:rgba(63,185,80,0.04)}
+.lc-warm{background:rgba(210,153,34,0.04)}
+.lc-cold{background:rgba(248,81,73,0.03)}
+.lc-arrow{position:absolute;right:-8px;top:50%;transform:translateY(-50%);z-index:2;color:var(--text3);font-size:14px}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:0 24px 28px;max-width:1440px;margin:0 auto}
+@media(max-width:1100px){.grid{grid-template-columns:1fr;max-width:540px}}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.card.t-red{border-color:rgba(248,81,73,.25)}
+.card.t-amber{border-color:rgba(210,153,34,.25)}
+.card.t-green{border-color:rgba(63,185,80,.3);box-shadow:0 0 60px rgba(63,185,80,.04)}
+
+.card-hdr{padding:18px 18px 14px;border-bottom:1px solid var(--border)}
+.tag{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 9px;border-radius:4px;display:inline-flex;align-items:center;gap:5px;margin-bottom:8px}
+.tag.red{background:var(--red-dim);color:var(--red)}.tag.amber{background:var(--amber-dim);color:var(--amber)}.tag.green{background:var(--green-dim);color:var(--green)}
+.card-hdr h3{font-size:16px;font-weight:700;margin-bottom:3px}
+.card-hdr p{font-size:11px;color:var(--text3)}
+
+.eng-pill{background:linear-gradient(135deg,var(--eng),#c026d3);padding:2px 7px;border-radius:3px;font-size:9px;font-weight:800;color:#fff;letter-spacing:.8px}
+
+/* FLOW AREA */
+.flow{position:relative;height:420px;background:var(--bg);border-bottom:1px solid var(--border);overflow:hidden}
+.flow svg{width:100%;height:100%}
+
+/* METRICS */
+.met-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:14px 14px 10px}
+.met{background:var(--bg2);border-radius:7px;padding:9px 11px}
+.met-label{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.met-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600}
+.met-val.red{color:var(--red)}.met-val.amber{color:var(--amber)}.met-val.green{color:var(--green)}
+
+/* ISSUES + SECURITY */
+.section{padding:0 14px 12px}
+.section-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.item{display:flex;gap:7px;padding:5px 0;font-size:11px;color:var(--text2);line-height:1.4}
+.dot{flex-shrink:0;width:5px;height:5px;border-radius:50%;margin-top:5px}
+.dot.r{background:var(--red)}.dot.a{background:var(--amber)}.dot.g{background:var(--green)}.dot.c{background:var(--cyan)}
+
+/* SECURITY SECTION */
+.sec-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-bottom:8px}
+.sec-badge.low{background:var(--red-dim);color:var(--red)}
+.sec-badge.mid{background:var(--amber-dim);color:var(--amber)}
+.sec-badge.high{background:var(--green-dim);color:var(--green)}
+
+/* TABLE */
+.tbl-wrap{max-width:1440px;margin:0 auto;padding:0 24px 20px}
+.tbl-title{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);text-align:center;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-width:640px;font-size:11px}
+.tbl-scroll{overflow-x:auto;border-radius:10px}
+th{padding:11px 14px;background:var(--bg2);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+th:not(:first-child){border-left:1px solid var(--border)}
+th:first-child{text-align:left;color:var(--text3)}
+td{padding:9px 14px;border-bottom:1px solid var(--border)}
+td:not(:first-child){border-left:1px solid var(--border);text-align:center}
+td:first-child{color:var(--text2);font-weight:500}
+tr:last-child td{border-bottom:none}
+.tv{font-family:'JetBrains Mono',monospace;font-weight:600}
+.tv.r{color:var(--red)}.tv.a{color:var(--amber)}.tv.g{color:var(--green)}
+.check{color:var(--green)}.cross{color:var(--red)}.warn{color:var(--amber)}
+
+.footer{text-align:center;padding:12px 24px 40px;font-size:10px;color:var(--text3);max-width:750px;margin:0 auto;line-height:1.5}
+
+/* ANIMATIONS */
+@keyframes flowPulse{0%,100%{opacity:.15}50%{opacity:.7}}
+@keyframes streamDot{0%{offset-distance:0%;opacity:0}8%{opacity:1}92%{opacity:1}100%{offset-distance:100%;opacity:0}}
+@keyframes bottleneck{0%,100%{r:5;opacity:.5}50%{r:9;opacity:1}}
+@keyframes lockShake{0%,100%{transform:translate(0,0)}20%{transform:translate(-1.5px,0)}40%{transform:translate(1.5px,0)}60%{transform:translate(-1px,0)}80%{transform:translate(1px,0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+.bn-ring{animation:bottleneck 1s ease-in-out infinite}
+.stream-pulse line{animation:flowPulse .7s ease-in-out infinite}
+.stream-pulse line:nth-child(2){animation-delay:.12s}
+.stream-pulse line:nth-child(3){animation-delay:.24s}
+.stream-pulse line:nth-child(4){animation-delay:.36s}
+.stream-pulse line:nth-child(5){animation-delay:.48s}
+.stream-pulse line:nth-child(6){animation-delay:.6s}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Engineering do Brasil — Fast Data</div>
+  <h1>Por que Fast Data for AI?</h1>
+  <p>Compare 3 arquiteturas de dados: fluxo, latência, gargalos, riscos e segurança. Do banco legado ao streaming em tempo real com camada de contexto.</p>
+</div>
+
+<!-- DATA LIFECYCLE -->
+<div class="lifecycle">
+  <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);text-align:center;margin-bottom:8px">Ciclo de vida do dado na arquitetura Fast Data</div>
+  <div class="lc-bar">
+    <div class="lc-seg lc-hot">
+      <div class="lc-title" style="color:var(--green)">Hot — Fast Data</div>
+      <div class="lc-desc">Dados de contexto, curto prazo<br>In-memory, streaming, &lt;100ms</div>
+      <span class="lc-arrow">&#8594;</span>
+    </div>
+    <div class="lc-seg lc-warm">
+      <div class="lc-title" style="color:var(--amber)">Warm — Data Lake / DW</div>
+      <div class="lc-desc">Dados consolidados, hist&oacute;rico<br>An&aacute;lise incremental, ~1min a 24h+</div>
+      <span class="lc-arrow">&#8594;</span>
+    </div>
+    <div class="lc-seg lc-cold">
+      <div class="lc-title" style="color:var(--red)">Cold — BD Legado</div>
+      <div class="lc-desc">Dados transacionais, arquivo<br>Persist&ecirc;ncia de longo prazo</div>
+    </div>
+  </div>
+</div>
+
+<div class="ctrl">
+  <button class="btn go" onclick="startSim()">&#9654; Simular fluxo de dados</button>
+  <button class="btn" onclick="resetSim()">&#8634; Reiniciar</button>
+</div>
+
+<!-- 3 CARDS -->
+<div class="grid">
+
+<!-- ==================== MODEL 1: LEGADO ==================== -->
+<div class="card t-red">
+  <div class="card-hdr">
+    <div class="tag red">Modelo legado</div>
+    <h3>Banco tradicional (OLTP)</h3>
+    <p>Query direta no BD de produ&ccedil;&atilde;o</p>
+  </div>
+  <div class="flow">
+    <svg viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg">
+      <!-- FLOW DIAGRAM -->
+      <rect x="130" y="14" width="140" height="34" rx="6" fill="var(--bg3)" stroke="var(--border2)" stroke-width=".5"/>
+      <text x="200" y="35" text-anchor="middle" fill="var(--text)" font-size="10" font-weight="600" font-family="DM Sans,sans-serif">App / Canal digital</text>
+
+      <line x1="200" y1="48" x2="200" y2="64" stroke="var(--text3)" stroke-width=".5"/>
+
+      <rect x="145" y="64" width="110" height="28" rx="5" fill="var(--bg3)" stroke="var(--border2)" stroke-width=".5"/>
+      <text x="200" y="82" text-anchor="middle" fill="var(--text2)" font-size="9" font-family="DM Sans,sans-serif">API direta (sem gateway)</text>
+
+      <line x1="200" y1="92" x2="200" y2="112" stroke="var(--text3)" stroke-width=".5"/>
+
+      <!-- BD Produção — gargalo -->
+      <rect x="115" y="112" width="170" height="38" rx="6" fill="rgba(248,81,73,.04)" stroke="var(--red)" stroke-width="1"/>
+      <text x="200" y="130" text-anchor="middle" fill="var(--red)" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">BD Produ&ccedil;&atilde;o (OLTP)</text>
+      <text x="200" y="143" text-anchor="middle" fill="var(--red)" font-size="8" opacity=".6" font-family="DM Sans,sans-serif">Leitura + Escrita no mesmo BD</text>
+      <circle class="bn-ring" cx="298" cy="131" r="5" fill="none" stroke="var(--red)" stroke-width="1.2"/>
+
+      <line x1="200" y1="150" x2="200" y2="168" stroke="var(--red)" stroke-width=".5" stroke-dasharray="3 2"/>
+
+      <!-- Gargalos -->
+      <rect x="100" y="168" width="200" height="56" rx="6" fill="rgba(248,81,73,.03)" stroke="var(--red)" stroke-width=".5" stroke-dasharray="4 2"/>
+      <text x="200" y="183" text-anchor="middle" fill="var(--red)" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">Gargalos</text>
+      <text x="200" y="196" text-anchor="middle" fill="var(--text3)" font-size="8" font-family="DM Sans,sans-serif">Locks, deadlocks, conten&ccedil;&atilde;o de recursos</text>
+      <text x="200" y="208" text-anchor="middle" fill="var(--text3)" font-size="8" font-family="DM Sans,sans-serif">Queries disputam com transa&ccedil;&otilde;es</text>
+      <text x="200" y="220" text-anchor="middle" fill="var(--text3)" font-size="8" font-family="DM Sans,sans-serif">Connection pool esgotado</text>
+
+      <!-- Latência -->
+      <text id="l1" x="200" y="265" text-anchor="middle" fill="var(--red)" font-family="JetBrains Mono,monospace" font-size="28" font-weight="700" opacity=".25">—</text>
+      <text x="200" y="282" text-anchor="middle" fill="var(--text3)" font-size="9" font-family="DM Sans,sans-serif">lat&ecirc;ncia end-to-end</text>
+
+      <!-- Erros -->
+      <g id="err1" opacity="0">
+        <rect x="80" y="300" width="70" height="20" rx="4" fill="var(--red-dim)"/>
+        <text x="115" y="314" text-anchor="middle" fill="var(--red)" font-size="8" font-weight="600" font-family="JetBrains Mono,monospace">TIMEOUT</text>
+        <rect x="160" y="300" width="74" height="20" rx="4" fill="var(--red-dim)"/>
+        <text x="197" y="314" text-anchor="middle" fill="var(--red)" font-size="8" font-weight="600" font-family="JetBrains Mono,monospace">DEADLOCK</text>
+        <rect x="244" y="300" width="78" height="20" rx="4" fill="var(--red-dim)"/>
+        <text x="283" y="314" text-anchor="middle" fill="var(--red)" font-size="8" font-weight="600" font-family="JetBrains Mono,monospace">CASCATA</text>
+      </g>
+
+      <!-- Segurança -->
+      <rect x="95" y="335" width="210" height="68" rx="6" fill="rgba(248,81,73,.02)" stroke="var(--border)" stroke-width=".5"/>
+      <text x="200" y="351" text-anchor="middle" fill="var(--red)" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">&#128274; Seguran&ccedil;a: Baixa</text>
+      <text x="200" y="365" text-anchor="middle" fill="var(--text3)" font-size="8" font-family="DM Sans,sans-serif">Connection strings expostas</text>
+      <text x="200" y="377" text-anchor="middle" fill="var(--text3)" font-size="8" font-family="DM Sans,sans-serif">Acesso direto ao BD sem API gateway</text>
+      <text x="200" y="389" text-anchor="middle" fill="var(--text3)" font-size="8" font-family="DM Sans,sans-serif">Sem rate limit, sem audit trail</text>
+    </svg>
+  </div>
+  <div class="met-grid">
+    <div class="met"><div class="met-label">Lat&ecirc;ncia</div><div class="met-val red">500ms–5s+</div></div>
+    <div class="met"><div class="met-label">Freshness</div><div class="met-val red">"Real time"</div></div>
+    <div class="met"><div class="met-label">Disponib.</div><div class="met-val red">~92%</div></div>
+    <div class="met"><div class="met-label">Seguran&ccedil;a</div><div class="met-val red">Ad hoc</div></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Riscos e erros poss&iacute;veis</div>
+    <div class="item"><div class="dot r"></div>Queries anal&iacute;ticas competem com transa&ccedil;&otilde;es no mesmo BD</div>
+    <div class="item"><div class="dot r"></div>Locks, deadlocks e conten&ccedil;&atilde;o sob carga alta</div>
+    <div class="item"><div class="dot r"></div>Falhas em cascata: BD cai &rarr; app e canais caem junto</div>
+    <div class="item"><div class="dot r"></div>Timeouts recorrentes em picos de volumetria</div>
+    <div class="item"><div class="dot r"></div>Sem governan&ccedil;a de acesso: qualquer servi&ccedil;o acessa tudo</div>
+    <div class="item"><div class="dot r"></div>Sem criptografia em tr&acirc;nsito entre app e BD</div>
+  </div>
+</div>
+
+<!-- ==================== MODEL 2: DL / DW ==================== -->
+<div class="card t-amber">
+  <div class="card-hdr">
+    <div class="tag amber">Modelo anal&iacute;tico</div>
+    <h3>Data Lake / Data Warehouse</h3>
+    <p>ETL incremental + camadas de armazenamento</p>
+  </div>
+  <div class="flow">
+    <svg viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg">
+      <rect x="115" y="10" width="170" height="30" rx="5" fill="var(--bg3)" stroke="var(--border2)" stroke-width=".5"/>
+      <text x="200" y="29" text-anchor="middle" fill="var(--text)" font-size="10" font-weight="600" font-family="DM Sans,sans-serif">Data Sources (origens)</text>
+
+      <line x1="200" y1="40" x2="200" y2="54" stroke="var(--text3)" stroke-width=".5"/>
+
+      <rect x="120" y="54" width="160" height="32" rx="5" fill="rgba(210,153,34,.04)" stroke="var(--amber)" stroke-width=".8"/>
+      <text x="200" y="72" text-anchor="middle" fill="var(--amber)" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">ETL / ELT (batch incremental)</text>
+      <circle class="bn-ring" cx="293" cy="70" r="5" fill="none" stroke="var(--amber)" stroke-width="1.2"/>
+
+      <line x1="200" y1="86" x2="200" y2="98" stroke="var(--text3)" stroke-width=".5"/>
+
+      <rect x="145" y="98" width="110" height="26" rx="5" fill="var(--bg3)" stroke="var(--border2)" stroke-width=".5"/>
+      <text x="200" y="115" text-anchor="middle" fill="var(--text2)" font-size="9" font-family="DM Sans,sans-serif">Staging / Raw zone</text>
+
+      <line x1="200" y1="124" x2="200" y2="136" stroke="var(--text3)" stroke-width=".5"/>
+
+      <rect x="120" y="136" width="160" height="26" rx="5" fill="var(--bg3)" stroke="var(--border2)" stroke-width=".5"/>
+      <text x="200" y="153" text-anchor="middle" fill="var(--text2)" font-size="9" font-family="DM Sans,sans-serif">Transform + Data Quality</text>
+
+      <line x1="200" y1="162" x2="200" y2="174" stroke="var(--text3)" stroke-width=".5"/>
+
+      <rect x="135" y="174" width="130" height="26" rx="5" fill="var(--bg3)" stroke="var(--border2)" stroke-width=".5"/>
+      <text x="200" y="191" text-anchor="middle" fill="var(--text2)" font-size="9" font-family="DM Sans,sans-serif">Data Warehouse</text>
+
+      <line x1="200" y1="200" x2="200" y2="212" stroke="var(--text3)" stroke-width=".5"/>
+
+      <rect x="150" y="212" width="100" height="24" rx="5" fill="var(--bg3)" stroke="var(--border2)" stroke-width=".5"/>
+      <text x="200" y="228" text-anchor="middle" fill="var(--text2)" font-size="9" font-family="DM Sans,sans-serif">BI / Analytics</text>
+
+      <!-- Gargalo: incremental -->
+      <rect x="85" y="252" width="230" height="50" rx="6" fill="rgba(210,153,34,.03)" stroke="var(--amber)" stroke-width=".5" stroke-dasharray="4 2"/>
+      <text x="200" y="268" text-anchor="middle" fill="var(--amber)" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">Gargalo: Lat&ecirc;ncia incremental</text>
+      <text x="200" y="281" text-anchor="middle" fill="var(--text3)" font-size="8" font-family="DM Sans,sans-serif">Depende do volume, limpeza e consolida&ccedil;&atilde;o</text>
+      <text x="200" y="293" text-anchor="middle" fill="var(--text3)" font-size="8" font-family="DM Sans,sans-serif">Pode variar de ~1 min a 24h+ por pipeline</text>
+
+      <!-- Latência -->
+      <text id="l2" x="200" y="332" text-anchor="middle" fill="var(--amber)" font-family="JetBrains Mono,monospace" font-size="28" font-weight="700" opacity=".25">—</text>
+      <text x="200" y="348" text-anchor="middle" fill="var(--text3)" font-size="9" font-family="DM Sans,sans-serif">lat&ecirc;ncia (varia por pipeline)</text>
+
+      <!-- Segurança -->
+      <rect x="95" y="360" width="210" height="52" rx="6" fill="rgba(210,153,34,.02)" stroke="var(--border)" stroke-width=".5"/>
+      <text x="200" y="376" text-anchor="middle" fill="var(--amber)" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">&#128274; Seguran&ccedil;a: Parcial</text>
+      <text x="200" y="389" text-anchor="middle" fill="var(--text3)" font-size="8" font-family="DM Sans,sans-serif">IAM + RBAC, mas pipelines com acessos amplos</text>
+      <text x="200" y="401" text-anchor="middle" fill="var(--text3)" font-size="8" font-family="DM Sans,sans-serif">Governan&ccedil;a fragmentada entre camadas</text>
+    </svg>
+  </div>
+  <div class="met-grid">
+    <div class="met"><div class="met-label">Lat&ecirc;ncia</div><div class="met-val amber">~1min–24h+</div></div>
+    <div class="met"><div class="met-label">Freshness</div><div class="met-val amber">Incremental</div></div>
+    <div class="met"><div class="met-label">Disponib.</div><div class="met-val amber">~97%</div></div>
+    <div class="met"><div class="met-label">Seguran&ccedil;a</div><div class="met-val amber">Parcial</div></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Riscos e erros poss&iacute;veis</div>
+    <div class="item"><div class="dot a"></div>Dados sempre com algum atraso (an&aacute;lise do passado recente)</div>
+    <div class="item"><div class="dot a"></div>Lat&ecirc;ncia varia conforme volume e complexidade do pipeline</div>
+    <div class="item"><div class="dot a"></div>Schema drift: fonte muda, pipeline quebra silenciosamente</div>
+    <div class="item"><div class="dot a"></div>Falha no ETL atrasa toda a cadeia downstream</div>
+    <div class="item"><div class="dot a"></div>Pipelines batch com acessos super-privilegiados</div>
+    <div class="item"><div class="dot a"></div>Custo alto de reprocessamento em caso de erro</div>
+  </div>
+</div>
+
+<!-- ==================== MODEL 3: FAST DATA ==================== -->
+<div class="card t-green">
+  <div class="card-hdr">
+    <div class="tag green">Fast Data <span class="eng-pill">ENG</span></div>
+    <h3>Fast Data for AI</h3>
+    <p>Camada de contexto real time + persist&ecirc;ncia no DL/Legado</p>
+  </div>
+  <div class="flow">
+    <svg viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg">
+      <!-- Sources -->
+      <rect x="105" y="8" width="190" height="28" rx="5" fill="var(--bg3)" stroke="var(--border2)" stroke-width=".5"/>
+      <text x="200" y="26" text-anchor="middle" fill="var(--text)" font-size="10" font-weight="600" font-family="DM Sans,sans-serif">Data Sources (CDC, IoT, logs, BDs)</text>
+
+      <!-- Streaming pulse lines -->
+      <g class="stream-pulse">
+        <line x1="200" y1="36" x2="200" y2="50" stroke="var(--green)" stroke-width="2.5" opacity=".15"/>
+        <line x1="200" y1="78" x2="200" y2="94" stroke="var(--green)" stroke-width="2.5" opacity=".15"/>
+        <line x1="200" y1="122" x2="200" y2="138" stroke="var(--cyan)" stroke-width="2.5" opacity=".15"/>
+        <line x1="200" y1="166" x2="200" y2="182" stroke="var(--eng)" stroke-width="2.5" opacity=".15"/>
+        <line x1="155" y1="212" x2="125" y2="232" stroke="var(--purple)" stroke-width="2" opacity=".15"/>
+        <line x1="245" y1="212" x2="275" y2="232" stroke="var(--green)" stroke-width="2" opacity=".15"/>
+      </g>
+
+      <!-- Static connector lines -->
+      <line x1="200" y1="36" x2="200" y2="50" stroke="var(--green)" stroke-width=".4" opacity=".3"/>
+      <line x1="200" y1="78" x2="200" y2="94" stroke="var(--green)" stroke-width=".4" opacity=".3"/>
+      <line x1="200" y1="122" x2="200" y2="138" stroke="var(--cyan)" stroke-width=".4" opacity=".3"/>
+      <line x1="200" y1="166" x2="200" y2="182" stroke="var(--eng)" stroke-width=".4" opacity=".3"/>
+      <line x1="155" y1="212" x2="125" y2="232" stroke="var(--purple)" stroke-width=".4" opacity=".3"/>
+      <line x1="245" y1="212" x2="275" y2="232" stroke="var(--green)" stroke-width=".4" opacity=".3"/>
+
+      <!-- Kafka -->
+      <rect x="115" y="50" width="170" height="28" rx="5" fill="rgba(63,185,80,.05)" stroke="var(--green)" stroke-width=".8"/>
+      <text x="200" y="68" text-anchor="middle" fill="var(--green)" font-size="10" font-weight="600" font-family="DM Sans,sans-serif">Apache Kafka (streaming)</text>
+
+      <!-- Flink -->
+      <rect x="110" y="94" width="180" height="28" rx="5" fill="rgba(63,185,80,.03)" stroke="var(--green)" stroke-width=".5"/>
+      <text x="200" y="112" text-anchor="middle" fill="var(--green)" font-size="9" font-family="DM Sans,sans-serif">Flink / Spark Streaming (process)</text>
+
+      <!-- In-memory -->
+      <rect x="115" y="138" width="170" height="28" rx="5" fill="rgba(57,210,192,.05)" stroke="var(--cyan)" stroke-width=".8"/>
+      <text x="200" y="156" text-anchor="middle" fill="var(--cyan)" font-size="10" font-weight="600" font-family="DM Sans,sans-serif">In-memory (Redis, Hazelcast)</text>
+
+      <!-- DHuO -->
+      <rect x="100" y="182" width="200" height="30" rx="6" fill="var(--eng-dim)" stroke="var(--eng)" stroke-width="1"/>
+      <text x="200" y="201" text-anchor="middle" fill="var(--eng)" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">DHuO — API Gateway + Gov</text>
+
+      <!-- Outputs -->
+      <rect x="48" y="232" width="140" height="28" rx="5" fill="rgba(163,113,247,.05)" stroke="var(--purple)" stroke-width=".5"/>
+      <text x="118" y="250" text-anchor="middle" fill="var(--purple)" font-size="9" font-weight="600" font-family="DM Sans,sans-serif">AI / ML / Agentes</text>
+
+      <rect x="212" y="232" width="140" height="28" rx="5" fill="rgba(63,185,80,.03)" stroke="var(--green)" stroke-width=".5"/>
+      <text x="282" y="250" text-anchor="middle" fill="var(--green)" font-size="9" font-family="DM Sans,sans-serif">BI real time + Apps</text>
+
+      <!-- CONTEXT LAYER label -->
+      <rect x="80" y="275" width="240" height="28" rx="6" fill="rgba(63,185,80,.04)" stroke="var(--green)" stroke-width=".5"/>
+      <text x="200" y="293" text-anchor="middle" fill="var(--green)" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">A&ccedil;&atilde;o imediata sobre o presente</text>
+
+      <!-- Persist back arrow -->
+      <line x1="200" y1="303" x2="200" y2="318" stroke="var(--text3)" stroke-width=".5" stroke-dasharray="3 2"/>
+      <rect x="100" y="318" width="200" height="34" rx="6" fill="rgba(210,153,34,.03)" stroke="var(--border2)" stroke-width=".5" stroke-dasharray="3 2"/>
+      <text x="200" y="334" text-anchor="middle" fill="var(--text3)" font-size="8" font-family="DM Sans,sans-serif">Ap&oacute;s uso, dados persistem no DL/DW ou Legado</text>
+      <text x="200" y="346" text-anchor="middle" fill="var(--text3)" font-size="8" font-family="DM Sans,sans-serif">&#8595; Hot &rarr; Warm &rarr; Cold (ciclo de vida natural)</text>
+
+      <!-- Latência -->
+      <text id="l3" x="200" y="386" text-anchor="middle" fill="var(--green)" font-family="JetBrains Mono,monospace" font-size="28" font-weight="700" opacity=".25">—</text>
+      <text x="200" y="403" text-anchor="middle" fill="var(--text3)" font-size="9" font-family="DM Sans,sans-serif">lat&ecirc;ncia end-to-end</text>
+
+      <!-- Segurança inline -->
+      <text x="200" y="417" text-anchor="middle" fill="var(--green)" font-size="8" font-weight="700" font-family="DM Sans,sans-serif">&#128274; DHuO: Auth, Rate Limit, DataSecOps, Audit Trail</text>
+    </svg>
+  </div>
+  <div class="met-grid">
+    <div class="met"><div class="met-label">Lat&ecirc;ncia</div><div class="met-val green">&lt;100ms</div></div>
+    <div class="met"><div class="met-label">Freshness</div><div class="met-val green">Real time</div></div>
+    <div class="met"><div class="met-label">Disponib.</div><div class="met-val green">~99.9%</div></div>
+    <div class="met"><div class="met-label">Seguran&ccedil;a</div><div class="met-val green">DHuO nativo</div></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Diferenciais e benef&iacute;cios</div>
+    <div class="item"><div class="dot g"></div>Camada de contexto: dados de curto prazo dispon&iacute;veis em ms para servi&ccedil;os e AI</div>
+    <div class="item"><div class="dot g"></div>Ap&oacute;s uso, dados persistem no DL/DW — n&atilde;o substitui, complementa</div>
+    <div class="item"><div class="dot g"></div>Streaming cont&iacute;nuo (evita batch): Kafka + Flink + in-memory</div>
+    <div class="item"><div class="dot g"></div>DHuO: governan&ccedil;a, auth, rate limit, audit trail e DataSecOps nativo</div>
+    <div class="item"><div class="dot g"></div>Event replay: recupera&ccedil;&atilde;o autom&aacute;tica de falhas</div>
+    <div class="item"><div class="dot c"></div>Alimenta AI, agentes e BI com dados do presente, n&atilde;o do passado</div>
+  </div>
+</div>
+</div>
+
+<!-- COMPARISON TABLE -->
+<div class="tbl-wrap">
+  <div class="tbl-title">Comparativo consolidado</div>
+  <div class="tbl-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:22%">Crit&eacute;rio</th>
+        <th style="color:var(--red)">BD Tradicional</th>
+        <th style="color:var(--amber)">Data Lake / DW</th>
+        <th style="color:var(--green)">Fast Data (ENG)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Lat&ecirc;ncia end-to-end</td>
+        <td><span class="tv r">500ms–5s+</span></td>
+        <td><span class="tv a">~1min–24h+</span></td>
+        <td><span class="tv g">&lt;100ms</span></td></tr>
+      <tr><td>Tipo de an&aacute;lise</td>
+        <td>Consulta pontual</td>
+        <td>Passado recente (incremental)</td>
+        <td class="tv g">Presente (real time)</td></tr>
+      <tr><td>Modelo de processamento</td>
+        <td>Request-response</td>
+        <td>Batch incremental</td>
+        <td class="tv g">Streaming cont&iacute;nuo</td></tr>
+      <tr><td>Risco de indisponibilidade</td>
+        <td class="tv r">Alto</td>
+        <td class="tv a">M&eacute;dio</td>
+        <td class="tv g">Baixo</td></tr>
+      <tr><td>Escalabilidade</td>
+        <td class="tv r">Vertical (limitada)</td>
+        <td class="tv a">Horizontal (batch)</td>
+        <td class="tv g">Horizontal (stream)</td></tr>
+      <tr><td>Seguran&ccedil;a e governan&ccedil;a</td>
+        <td class="tv r">Ad hoc, sem gateway</td>
+        <td class="tv a">IAM/RBAC parcial</td>
+        <td class="tv g">DHuO: DataSecOps nativo</td></tr>
+      <tr><td>Auditoria e rastreabilidade</td>
+        <td class="tv r">Inexistente</td>
+        <td class="tv a">Logs de pipeline</td>
+        <td class="tv g">Audit trail por evento</td></tr>
+      <tr><td>Criptografia em tr&acirc;nsito</td>
+        <td class="tv r">Opcional / manual</td>
+        <td class="tv a">Parcial (entre camadas)</td>
+        <td class="tv g">Nativa (API Gateway)</td></tr>
+      <tr><td>Rate limiting / DDoS</td>
+        <td class="cross">&#10060;</td>
+        <td class="cross">&#10060;</td>
+        <td class="check">&#10004; DHuO nativo</td></tr>
+      <tr><td>Pronto para AI / Agentes</td>
+        <td class="cross">&#10060;</td>
+        <td class="warn">&#9888;&#65039; Parcial</td>
+        <td class="check">&#10004; Nativo</td></tr>
+      <tr><td>Ciclo de vida do dado</td>
+        <td>Persist&ecirc;ncia &uacute;nica</td>
+        <td>Armazenamento em camadas</td>
+        <td class="tv g">Hot &rarr; Warm &rarr; Cold</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="footer">
+  Dados de mercado: McKinsey, BCG, Bain, Gartner, Forrester, IDC, ISG — Fast Data Offer v1.2, Engineering do Brasil, Abril 2026.<br>
+  Simula&ccedil;&atilde;o conceitual para fins de demonstra&ccedil;&atilde;o comercial. Latências representam cen&aacute;rios t&iacute;picos observados em mercado.
+</div>
+
+<script>
+let running=false,timer=null;
+
+function startSim(){
+  if(running)return;
+  running=true;
+  let t=0;
+  const e1=document.getElementById('l1'),
+        e2=document.getElementById('l2'),
+        e3=document.getElementById('l3'),
+        er=document.getElementById('err1');
+  e1.setAttribute('opacity','1');
+  e2.setAttribute('opacity','1');
+  e3.setAttribute('opacity','1');
+  let d1=false,d2=false,d3=false;
+
+  timer=setInterval(()=>{
+    t+=16;
+
+    // Model 3: Fast Data — resolves in ~80ms
+    if(!d3){
+      let v=Math.min(t*1.3,82);
+      e3.textContent=Math.round(v)+'ms';
+      if(v>=82){d3=true;e3.textContent='~80ms'}
+    }
+
+    // Model 1: Traditional — ~2.8s with errors
+    if(!d1){
+      let v=Math.min(t*0.7,2800);
+      e1.textContent=v<1000?Math.round(v)+'ms':(v/1000).toFixed(1)+'s';
+      if(v>=2800){d1=true;e1.textContent='~2.8s';er.setAttribute('opacity','1')}
+    }
+
+    // Model 2: DL/DW — incremental, show range building up
+    if(!d2){
+      if(t<500){
+        e2.textContent='~1min';
+      }else if(t<1200){
+        let m=Math.round(1+(t-500)/100);
+        e2.textContent='~'+Math.min(m,15)+'min';
+      }else if(t<2500){
+        let m=Math.round(15+(t-1200)/80);
+        e2.textContent='~'+Math.min(m,60)+'min';
+      }else if(t<3500){
+        let h=1+((t-2500)/1000)*3;
+        e2.textContent='~'+h.toFixed(1)+'h';
+      }else{
+        d2=true;
+        e2.textContent='~1min–24h+';
+        e2.setAttribute('font-size','20');
+      }
+    }
+
+    if(d1&&d2&&d3&&t>4500){
+      clearInterval(timer);running=false;
+    }
+  },16);
+}
+
+function resetSim(){
+  if(timer)clearInterval(timer);
+  running=false;
+  ['l1','l2','l3'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.textContent='—';el.setAttribute('opacity','.25');
+    if(id==='l2')el.setAttribute('font-size','28');
+  });
+  document.getElementById('err1').setAttribute('opacity','0');
+}
+</script>
+<!-- CROSS NAV -->
+<div style="position:fixed;bottom:16px;right:16px;z-index:999;display:flex;gap:6px;flex-wrap:wrap;max-width:340px">
+<a href="index.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#127968; One-page</a>
+<a href="comparativo.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#128202; Comparativo</a>
+<a href="simulador.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#9889; Simulador</a>
+<a href="arquitetura.html" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;padding:7px 12px;border-radius:6px;background:rgba(13,21,32,.92);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(8px);">&#128736; Arquitetura</a>
+</div>
+</body>
+</html>
