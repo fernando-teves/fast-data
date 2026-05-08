@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Data for AI — Guia Comercial</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{--bg:#060a10;--bg2:#0b1018;--bg3:#111a28;--card:#0d1520;--brd:#1a2640;--brd2:#243352;--tx:#e8edf4;--tx2:#94a3b8;--tx3:#5a6577;--red:#f74a4a;--amb:#e5a61b;--grn:#34d399;--cyan:#22d3ee;--pur:#a78bfa;--blue:#60a5fa;--eng:#e91e8c}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;background:rgba(6,10,16,.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(26,38,64,.5)}
+nav .b{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx2)}nav .b strong{color:var(--grn)}
+nav .l{display:flex;gap:16px}nav .l a{font-size:9px;font-weight:600;color:var(--tx3);text-decoration:none;letter-spacing:.5px}nav .l a:hover{color:var(--tx)}
+@media(max-width:700px){nav .l{display:none}}
+section{padding:60px 24px;max-width:900px;margin:0 auto}
+.stag{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
+.sh{font-size:clamp(20px,3vw,30px);font-weight:700;line-height:1.2;margin-bottom:10px}
+.sp{font-size:13px;color:var(--tx2);line-height:1.7;max-width:700px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:18px;margin-bottom:10px}
+.card h4{font-size:13px;font-weight:700;margin-bottom:6px}.card p,.card li{font-size:12px;color:var(--tx2);line-height:1.6}
+.card ul{padding-left:16px;margin-top:4px}
+.card ul li{margin-bottom:3px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:700px){.g2{grid-template-columns:1fr}}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}@media(max-width:700px){.g3{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--brd);border-radius:10px;overflow:hidden;font-size:11px;margin-top:14px}
+th{padding:10px 14px;background:var(--bg3);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-align:left;border-bottom:1px solid var(--brd)}
+td{padding:9px 14px;border-bottom:1px solid var(--brd);color:var(--tx2);line-height:1.5;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.step{display:flex;gap:14px;margin-bottom:12px;padding:16px;background:var(--card);border:1px solid var(--brd);border-radius:10px}
+.step-n{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;flex-shrink:0;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);color:var(--grn)}
+.step-b{flex:1}.step-b h4{font-size:12px;font-weight:700;color:var(--grn);margin-bottom:3px}.step-b p{font-size:11px;color:var(--tx2);line-height:1.5}
+.block{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:20px;margin-bottom:10px;border-left:3px solid var(--grn)}
+.block h4{font-size:14px;font-weight:700;color:var(--grn);margin-bottom:6px}.block p{font-size:12px;color:var(--tx2);line-height:1.5;margin-bottom:8px}
+.block ul{font-size:11px;color:var(--tx2);padding-left:16px;line-height:1.6}
+.q{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:12px 16px;margin-bottom:6px;font-size:12px;color:var(--tx2);display:flex;gap:8px;line-height:1.5}
+.q .n{color:var(--grn);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;flex-shrink:0}
+.obj{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:8px;background:var(--card);border:1px solid var(--brd);border-radius:8px;overflow:hidden}
+.obj .ob{padding:12px 14px;font-size:11px;line-height:1.5;color:var(--red);font-weight:600}
+.obj .re{padding:12px 14px;font-size:11px;line-height:1.5;color:var(--tx2);border-left:1px solid var(--brd)}
+@media(max-width:600px){.obj{grid-template-columns:1fr}.obj .re{border-left:none;border-top:1px solid var(--brd)}}
+.msg{background:var(--bg3);border:1px solid var(--brd);border-radius:12px;padding:20px;margin-top:14px;font-size:12px;color:var(--tx2);line-height:1.7;white-space:pre-wrap}
+.msg-tag{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:block}
+.highlight{background:var(--bg3);border:1px solid var(--brd);border-radius:12px;padding:24px;text-align:center;margin:20px 0}
+.highlight p{font-size:clamp(14px,2vw,18px);font-weight:600;line-height:1.5;max-width:600px;margin:0 auto}
+.highlight em{color:var(--grn);font-style:normal;font-weight:700}
+.fit{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--tx2);margin-bottom:4px;display:flex;align-items:flex-start;gap:6px;line-height:1.4}
+.fit .d{width:5px;height:5px;border-radius:50%;background:var(--grn);flex-shrink:0;margin-top:5px}
+.footer{text-align:center;padding:20px 24px 40px;font-size:9px;color:var(--tx3);border-top:1px solid var(--brd)}
+</style>
+</head>
+<body>
+<nav><div class="b">Engineering <strong>Guia Comercial</strong></div><div class="l"><a href="#resumo">Resumo</a><a href="#dor">Dor</a><a href="#valor">Valor</a><a href="#como">Como funciona</a><a href="#blocos">Blocos</a><a href="#qualify">Qualificação</a><a href="#objecoes">Objeções</a></div></nav>
+
+<section style="padding-top:120px">
+<div class="stag" style="color:var(--eng)">Material interno — Time comercial</div>
+<div class="sh">Fast Data for AI — Guia Comercial</div>
+<div class="sp">Na Engineering Brasil, criamos o Fast Data for AI para ajudar empresas a transformar dados em decisões, automações e ações no exato momento em que os eventos acontecem. Este guia é o seu playbook para qualificar, posicionar e vender.</div>
+</section>
+
+<!-- RESUMO -->
+<section id="resumo">
+<div class="stag" style="color:var(--grn)">Resumo da solução</div>
+<div class="sh">O que é e o que alimenta</div>
+<div class="sp">O Fast Data for AI estrutura uma camada de dados em tempo real para alimentar:</div>
+<div class="g3">
+<div class="card"><h4 style="color:var(--pur)">&#129302; AI</h4><p>Agentes de IA, modelos preditivos, RAG e busca semântica</p></div>
+<div class="card"><h4 style="color:var(--cyan)">&#128200; Operação</h4><p>Dashboards operacionais, automações inteligentes, canais digitais</p></div>
+<div class="card"><h4 style="color:var(--amb)">&#128640; Produtos</h4><p>Produtos de dados em tempo real, data mesh e APIs de valor</p></div>
+</div>
+<div class="highlight"><p>Não substituímos Data Lake, DW ou legado. Criamos uma <em>camada complementar</em> de velocidade, contexto e ação.</p></div>
+<table>
+<tr><th>Camada</th><th>Papel</th></tr>
+<tr><td style="color:var(--grn);font-weight:700">Fast Data</td><td>Dados em milissegundos para AI, agentes e decisões operacionais</td></tr>
+<tr><td style="color:var(--amb);font-weight:600">Data Lake / DW</td><td>Dados históricos para analytics, BI e análises estruturadas</td></tr>
+<tr><td style="color:var(--tx3);font-weight:600">Legado</td><td>Persistência, compliance, operação transacional e auditoria</td></tr>
+</table>
+</section>
+
+<!-- DOR -->
+<section id="dor">
+<div class="stag" style="color:var(--red)">Dor de mercado</div>
+<div class="sh">Empresas investem em AI, mas operam com dados atrasados</div>
+<div class="g2">
+<div class="card" style="border-left:3px solid var(--red)"><h4 style="color:var(--red)">AI sem contexto</h4><p>Agentes tomam decisões com dados antigos. RAG retorna respostas desatualizadas. Modelos preditivos com baixa acurácia.</p></div>
+<div class="card" style="border-left:3px solid var(--red)"><h4 style="color:var(--red)">Operação lenta</h4><p>Dashboards D-1. Canais digitais lentos ou instáveis. Bancos transacionais sobrecarregados.</p></div>
+<div class="card" style="border-left:3px solid var(--red)"><h4 style="color:var(--red)">Processos frágeis</h4><p>Integrações frágeis. Automações sem visão em tempo real. Decisões tardias em fraude, atendimento e manutenção.</p></div>
+<div class="card" style="border-left:3px solid var(--red)"><h4 style="color:var(--red)">Dados fragmentados</h4><p>Batch, ETL pesado, pipelines independentes. Dados chegam tarde, incompletos ou inconsistentes.</p></div>
+</div>
+</section>
+
+<!-- VALOR -->
+<section id="valor">
+<div class="stag" style="color:var(--grn)">Proposta de valor</div>
+<div class="sh">O que entregamos</div>
+<table>
+<tr><th>Objetivo</th><th>Valor entregue</th></tr>
+<tr><td style="font-weight:600">Reduzir latência</td><td>Dados disponíveis no momento em que são gerados</td></tr>
+<tr><td style="font-weight:600">Melhorar a AI</td><td>Agentes e modelos com contexto atualizado</td></tr>
+<tr><td style="font-weight:600">Aumentar eficiência</td><td>Menos retrabalho, rechamadas e falhas operacionais</td></tr>
+<tr><td style="font-weight:600">Melhorar canais digitais</td><td>Mais disponibilidade, velocidade e consistência</td></tr>
+<tr><td style="font-weight:600">Reduzir TCO</td><td>Menos sobrecarga em bancos e pipelines batch</td></tr>
+<tr><td style="font-weight:600">Automatizar decisões</td><td>Ações baseadas em eventos reais e recentes</td></tr>
+<tr><td style="font-weight:600">Preparar AI agêntica</td><td>Camada de contexto para agentes e sistemas multiagentes</td></tr>
+</table>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section id="como">
+<div class="stag" style="color:var(--cyan)">Como funciona</div>
+<div class="sh">6 passos, da origem à ação</div>
+<div class="step"><div class="step-n">01</div><div class="step-b"><h4>Capturamos dados nas fontes</h4><p>Sistemas, bancos, logs, APIs, webhooks, IoT, aplicações e canais digitais.</p></div></div>
+<div class="step"><div class="step-n">02</div><div class="step-b"><h4>Ingerimos em tempo real</h4><p>Streaming, CDC, eventos, conectores e APIs. Sem batch, sem atraso.</p></div></div>
+<div class="step"><div class="step-n">03</div><div class="step-b"><h4>Processamos dados em movimento</h4><p>Tratamento, enriquecimento, filtros, regras e correlações em tempo real.</p></div></div>
+<div class="step"><div class="step-n">04</div><div class="step-b"><h4>Criamos camada de baixa latência</h4><p>Serving layer com Redis, Hazelcast, MongoDB, Cassandra ou similares.</p></div></div>
+<div class="step"><div class="step-n">05</div><div class="step-b"><h4>Expomos via APIs, eventos e DHuO</h4><p>Governança, segurança, autenticação, rate limit, integração e orquestração.</p></div></div>
+<div class="step"><div class="step-n">06</div><div class="step-b"><h4>Alimentamos AI, BI e automações</h4><p>Agentes, modelos, dashboards, canais digitais e ações automáticas.</p></div></div>
+</section>
+
+<!-- BLOCOS DE ATUAÇÃO -->
+<section id="blocos">
+<div class="stag" style="color:var(--pur)">Blocos de atuação</div>
+<div class="sh">5 blocos, do diagnóstico à ação</div>
+<div class="block"><h4>1. Fast Data Discovery</h4><p>Mapeamos fontes, casos de uso, arquitetura atual, gargalos e oportunidades.</p><ul><li>Diagnóstico inicial e mapa de fontes críticas</li><li>Casos de uso priorizados e roadmap de evolução</li><li>Business case preliminar</li></ul></div>
+<div class="block"><h4>2. Real Time Data Ingestion</h4><p>Captura contínua de dados em streaming.</p><ul><li>Ingestão via streaming, CDC, APIs ou eventos</li><li>Conectores com sistemas críticos</li><li>Redução de dependência de batch</li></ul></div>
+<div class="block"><h4>3. Stream Processing</h4><p>Dados em movimento para gerar contexto acionável.</p><ul><li>Regras em tempo real e enriquecimento de eventos</li><li>Detecção de padrões</li><li>Dados prontos para AI e automação</li></ul></div>
+<div class="block"><h4>4. Serving Layer</h4><p>Camada rápida de consulta e consumo.</p><ul><li>Baixa latência e alta disponibilidade</li><li>Menor pressão sobre bancos transacionais</li><li>Dados prontos para APIs, dashboards e agentes</li></ul></div>
+<div class="block"><h4>5. Consumo por AI e Operação</h4><p>Dados em tempo real conectados aos usos de negócio.</p><ul><li>Agentes com contexto, RAG com dados frescos</li><li>Modelos preditivos mais precisos</li><li>BI operacional e automações baseadas em eventos</li></ul></div>
+</section>
+
+<!-- CASOS DE USO -->
+<section>
+<div class="stag" style="color:var(--cyan)">Casos de uso</div>
+<div class="sh">Aplicações por setor</div>
+<table>
+<tr><th>Setor</th><th>Aplicações</th></tr>
+<tr><td style="font-weight:600">Telecom</td><td>Canais digitais, atendimento, autogestão, ofertas em tempo real</td></tr>
+<tr><td style="font-weight:600">Saneamento / Utilities</td><td>Agência virtual, consumo, cobrança, smart grids</td></tr>
+<tr><td style="font-weight:600">Financeiro</td><td>Antifraude, crédito instantâneo, liquidez, risco operacional</td></tr>
+<tr><td style="font-weight:600">Indústria</td><td>IoT, manutenção preditiva, qualidade, anomalias</td></tr>
+<tr><td style="font-weight:600">Logística</td><td>Rotas, rastreamento, frotas, precificação dinâmica</td></tr>
+<tr><td style="font-weight:600">Saúde</td><td>Monitoramento remoto, fluxo hospitalar, telemetria</td></tr>
+<tr><td style="font-weight:600">Varejo</td><td>Personalização, recomendação, estoque, experiência</td></tr>
+</table>
+</section>
+
+<!-- QUALIFICAÇÃO -->
+<section id="qualify">
+<div class="stag" style="color:var(--amb)">Qualificação</div>
+<div class="sh">10 perguntas para qualificar a oportunidade</div>
+<div class="q"><span class="n">01</span>O cliente precisa tomar decisões em segundos ou milissegundos?</div>
+<div class="q"><span class="n">02</span>Existem canais digitais com lentidão, timeout ou instabilidade?</div>
+<div class="q"><span class="n">03</span>Os dados são consumidos diretamente de bancos transacionais?</div>
+<div class="q"><span class="n">04</span>A empresa depende de dashboards D-1 ou relatórios batch?</div>
+<div class="q"><span class="n">05</span>Há iniciativas de AI, RAG ou agentes que precisam de dados atualizados?</div>
+<div class="q"><span class="n">06</span>Existem modelos preditivos com baixa acurácia por atraso nos dados?</div>
+<div class="q"><span class="n">07</span>A operação sofre com retrabalho, rechamadas ou decisões tardias?</div>
+<div class="q"><span class="n">08</span>O cliente já usa Kafka, CDC, Flink, Redis, APIs ou eventos?</div>
+<div class="q"><span class="n">09</span>Há pressão por redução de TCO em dados e integrações?</div>
+<div class="q"><span class="n">10</span>Existe um caso de uso crítico que possa virar Discovery ou MVP?</div>
+
+<div style="margin-top:20px">
+<div class="stag" style="color:var(--grn)">Alta aderência quando o cliente tem:</div>
+<div class="fit"><span class="d"></span>Alto volume transacional</div>
+<div class="fit"><span class="d"></span>Canais digitais críticos</div>
+<div class="fit"><span class="d"></span>Dados atrasados ou inconsistentes</div>
+<div class="fit"><span class="d"></span>AI sem contexto em tempo real</div>
+<div class="fit"><span class="d"></span>Bancos de produção sobrecarregados</div>
+<div class="fit"><span class="d"></span>Operações com risco, fraude, IoT ou atendimento</div>
+<div class="fit"><span class="d"></span>Pressão por eficiência operacional</div>
+<div class="fit"><span class="d"></span>Necessidade de preparar base para AI agêntica</div>
+</div>
+</section>
+
+<!-- OBJEÇÕES -->
+<section id="objecoes">
+<div class="stag" style="color:var(--red)">Objeções e respostas</div>
+<div class="sh">Como responder às objeções mais comuns</div>
+<div class="obj"><div class="ob">"Já temos Data Lake"</div><div class="re">O Fast Data complementa o DL com uma camada de dados em tempo real. Não substituímos — aceleramos.</div></div>
+<div class="obj"><div class="ob">"Já temos Kafka"</div><div class="re">Kafka é parte da arquitetura. Nós entregamos estratégia, governança, serving layer, APIs, AI e operação.</div></div>
+<div class="obj"><div class="ob">"Nosso batch funciona"</div><div class="re">Batch funciona para histórico. Fast Data é para decisões, AI e automações que dependem do presente.</div></div>
+<div class="obj"><div class="ob">"Parece complexo"</div><div class="re">Podemos começar por um caso de uso crítico em formato Discovery ou MVP. Rápido e tangível.</div></div>
+<div class="obj"><div class="ob">"Não queremos trocar sistemas"</div><div class="re">Nossa proposta é complementar e desacoplar, preservando o legado.</div></div>
+</section>
+
+<!-- TEMPLATES -->
+<section>
+<div class="stag" style="color:var(--eng)">Templates de abordagem</div>
+<div class="sh">E-mail e LinkedIn prontos para usar</div>
+
+<div class="msg"><span class="msg-tag" style="color:var(--cyan)">Template de e-mail</span>Olá, tudo bem?
+
+Na Engineering Brasil, criamos o Fast Data for AI para ajudar empresas a alimentar AI, agentes, dashboards e automações com dados em tempo real.
+
+Muitas iniciativas de AI perdem impacto porque os dados chegam tarde, incompletos ou desatualizados. Com Fast Data, estruturamos uma camada de ingestão, processamento e exposição em tempo real.
+
+A proposta é ajudar sua empresa a agir sobre o presente, com baixa latência, governança e mais eficiência operacional.
+
+Podemos iniciar com um Fast Data Discovery para mapear um caso de uso crítico e estimar o potencial de ganho.</div>
+
+<div class="msg"><span class="msg-tag" style="color:var(--blue)">Template de LinkedIn</span>Olá, tudo bem?
+
+Na Engineering Brasil, criamos o Fast Data for AI para ajudar empresas a alimentar agentes, modelos, dashboards e automações com dados em tempo real.
+
+A proposta é simples: parar de decidir com dados atrasados e começar a agir sobre o presente.
+
+Podemos iniciar com um Fast Data Discovery para mapear fontes, gargalos de latência e um caso de uso crítico com potencial de ganho.</div>
+</section>
+
+<div class="highlight"><p>"Seus dados chegam <em>rápido o suficiente</em> para a sua AI <em>decidir bem</em>?"</p></div>
+
+<div class="footer">Fast Data for AI — Guia Comercial | Engineering do Brasil | Maio 2026<br>Material interno para time comercial</div>
+<!-- CROSS NAV -->
+<div style="position:fixed;bottom:16px;right:16px;z-index:99999;display:flex;gap:5px;flex-wrap:wrap;max-width:460px;">
+  <a href="index.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:700;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(52,211,153,.3);color:#34d399;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Hub</a>
+  <a href="onepage.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">One-page</a>
+  <a href="comparativo.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Comparativo</a>
+  <a href="simulador.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Simulador</a>
+  <a href="arquitetura.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Arquitetura</a>
+  <a href="comercial.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(233,30,140,.25);color:#e91e8c;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Guia</a>
+  <a href="battlecard.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(229,166,27,.25);color:#e5a61b;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Battle Card</a>
+</div>
+</body></html>

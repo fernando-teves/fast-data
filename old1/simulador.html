@@ -144,7 +144,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 <div class="wrap">
   <div class="hdr">
     <div class="tag">Engineering do Brasil — Fast Data for AI</div>
-    <h1>Simulador: por que a AI precisa de Fast Data</h1>
+    <h1>Simulador: mesmo request, 3 arquiteturas</h1>
     <p>Selecione uma solicita&ccedil;&atilde;o e veja cada resposta chegar no chat conforme a arquitetura finaliza</p>
   </div>
 
@@ -438,22 +438,19 @@ async function go(idx){
   proc.remove();
 
   await sleep(500);
-  msg('sys','Pronto! Com Fast Data, a AI responde em milissegundos enquanto as outras arquiteturas ainda travam. Selecione outro cenário.');
+  msg('sys','Pronto! O Fast Data respondeu enquanto os outros ainda processavam. Selecione outro cenário para comparar.');
 
   document.querySelectorAll('.rb').forEach(b=>b.disabled=false);
   busy=false;
 }
 </script>
-
 <!-- CROSS NAV -->
-<div style="position:fixed;bottom:16px;right:16px;z-index:99999;display:flex;gap:5px;flex-wrap:wrap;max-width:460px;">
-  <a href="index.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:700;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(52,211,153,.3);color:#34d399;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Hub</a>
-  <a href="onepage.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">One-page</a>
-  <a href="comparativo.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Comparativo</a>
-  <a href="simulador.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Simulador</a>
-  <a href="arquitetura.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Arquitetura</a>
-  <a href="comercial.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(233,30,140,.25);color:#e91e8c;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Guia</a>
-  <a href="battlecard.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(229,166,27,.25);color:#e5a61b;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Battle Card</a>
+<div id="crossnav" style="position:fixed;bottom:16px;right:16px;z-index:99999;display:flex;gap:6px;flex-wrap:wrap;max-width:400px;">
+  <a href="index.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:700;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(52,211,153,.3);color:#34d399;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#127760; Hub</a>
+  <a href="onepage.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:600;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#127968; One-page</a>
+  <a href="comparativo.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:600;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#128202; Comparativo</a>
+  <a href="simulador.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:600;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#9889; Simulador</a>
+  <a href="arquitetura.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:600;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#128736; Arquitetura</a>
 </div>
 </body>
 </html>

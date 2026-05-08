@@ -142,14 +142,14 @@ tr:last-child td{border-bottom:none}
 <body>
 
 <div class="hero">
-  <div class="hero-tag">Engineering do Brasil — Fast Data for AI</div>
-  <h1>Por que a AI precisa de Fast Data?</h1>
+  <div class="hero-tag">Engineering do Brasil — Fast Data</div>
+  <h1>Por que Fast Data for AI?</h1>
   <p>Compare 3 arquiteturas de dados: fluxo, latência, gargalos, riscos e segurança. Do banco legado ao streaming em tempo real com camada de contexto.</p>
 </div>
 
 <!-- DATA LIFECYCLE -->
 <div class="lifecycle">
-  <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);text-align:center;margin-bottom:8px">Ciclo de vida do dado: a camada de contexto para AI</div>
+  <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);text-align:center;margin-bottom:8px">Ciclo de vida do dado na arquitetura Fast Data</div>
   <div class="lc-bar">
     <div class="lc-seg lc-hot">
       <div class="lc-title" style="color:var(--green)">Hot — Fast Data</div>
@@ -414,7 +414,7 @@ tr:last-child td{border-bottom:none}
 
 <!-- COMPARISON TABLE -->
 <div class="tbl-wrap">
-  <div class="tbl-title">Comparativo: prontidão para AI</div>
+  <div class="tbl-title">Comparativo consolidado</div>
   <div class="tbl-scroll">
   <table>
     <thead>
@@ -550,16 +550,13 @@ function resetSim(){
   document.getElementById('err1').setAttribute('opacity','0');
 }
 </script>
-
 <!-- CROSS NAV -->
-<div style="position:fixed;bottom:16px;right:16px;z-index:99999;display:flex;gap:5px;flex-wrap:wrap;max-width:460px;">
-  <a href="index.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:700;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(52,211,153,.3);color:#34d399;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Hub</a>
-  <a href="onepage.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">One-page</a>
-  <a href="comparativo.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Comparativo</a>
-  <a href="simulador.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Simulador</a>
-  <a href="arquitetura.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Arquitetura</a>
-  <a href="comercial.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(233,30,140,.25);color:#e91e8c;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Guia</a>
-  <a href="battlecard.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(229,166,27,.25);color:#e5a61b;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Battle Card</a>
+<div id="crossnav" style="position:fixed;bottom:16px;right:16px;z-index:99999;display:flex;gap:6px;flex-wrap:wrap;max-width:400px;">
+  <a href="index.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:700;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(52,211,153,.3);color:#34d399;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#127760; Hub</a>
+  <a href="onepage.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:600;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#127968; One-page</a>
+  <a href="comparativo.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:600;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#128202; Comparativo</a>
+  <a href="simulador.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:600;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#9889; Simulador</a>
+  <a href="arquitetura.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:600;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#128736; Arquitetura</a>
 </div>
 </body>
 </html>

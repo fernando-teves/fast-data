@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Data for AI — Battle Card</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{--bg:#060a10;--bg2:#0b1018;--bg3:#111a28;--card:#0d1520;--brd:#1a2640;--brd2:#243352;--tx:#e8edf4;--tx2:#94a3b8;--tx3:#5a6577;--red:#f74a4a;--amb:#e5a61b;--grn:#34d399;--cyan:#22d3ee;--pur:#a78bfa;--eng:#e91e8c}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;padding:20px;max-width:1200px;margin:0 auto}
+@media print{body{background:#fff;color:#111;padding:10px}:root{--bg:#fff;--bg2:#f8f8f8;--bg3:#f0f0f0;--card:#fafafa;--brd:#ddd;--tx:#111;--tx2:#555;--tx3:#888}}
+
+.header{text-align:center;padding:16px 0 12px;border-bottom:2px solid var(--grn);margin-bottom:16px}
+.header .tag{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--eng)}
+.header h1{font-size:22px;font-weight:700;margin:4px 0 2px;color:var(--grn)}
+.header p{font-size:10px;color:var(--tx3)}
+
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+
+.box{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:12px;overflow:hidden}
+.box-title{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:5px}
+.box ul{font-size:10px;color:var(--tx2);padding-left:14px;line-height:1.6}
+.box ul li{margin-bottom:2px}
+.box p{font-size:10px;color:var(--tx2);line-height:1.5}
+
+.pitch{background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:14px;text-align:center;margin-bottom:12px}
+.pitch p{font-size:13px;font-weight:600;line-height:1.5;max-width:700px;margin:0 auto}
+.pitch em{color:var(--grn);font-style:normal;font-weight:700}
+
+.obj-row{display:flex;gap:0;margin-bottom:4px;font-size:10px;border-radius:6px;overflow:hidden;border:1px solid var(--brd)}
+.obj-row .ob{background:var(--card);padding:8px 10px;width:40%;color:var(--red);font-weight:600;line-height:1.4}
+.obj-row .re{padding:8px 10px;width:60%;color:var(--tx2);line-height:1.4}
+
+.metric{text-align:center;padding:10px}
+.metric .v{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--grn)}
+.metric .l{font-size:8px;color:var(--tx3);margin-top:1px}
+
+.footer{text-align:center;padding:10px 0;font-size:8px;color:var(--tx3);border-top:1px solid var(--brd);margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="header">
+<div class="tag">Engineering do Brasil — Battle Card</div>
+<h1>Fast Data for AI</h1>
+<p>A camada de dados essencial para AI, operações e negócios em tempo real</p>
+</div>
+
+<!-- METRICS -->
+<div style="display:flex;justify-content:center;gap:32px;margin-bottom:14px">
+<div class="metric"><div class="v">&lt;100ms</div><div class="l">Latência</div></div>
+<div class="metric"><div class="v">99.9%</div><div class="l">Disponib.</div></div>
+<div class="metric"><div class="v">Real time</div><div class="l">Freshness</div></div>
+<div class="metric"><div class="v">3 cases</div><div class="l">Em produção</div></div>
+</div>
+
+<!-- PITCH -->
+<div class="pitch"><p>"Seus dados chegam <em>rápido o suficiente</em> para a sua AI <em>decidir bem</em>?"</p></div>
+
+<!-- ROW 1: O que é + Dor + Valor -->
+<div class="grid">
+<div class="box">
+<div class="box-title" style="color:var(--grn)">&#9889; O que é</div>
+<p>Camada de dados em tempo real que alimenta AI, agentes, dashboards e automações. Complementa DL/DW e legado — não substitui.</p>
+<ul style="margin-top:8px">
+<li>Streaming contínuo, não batch</li>
+<li>In-memory: leitura em milissegundos</li>
+<li>Governança nativa via DHuO</li>
+<li>Hot → Warm → Cold lifecycle</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title" style="color:var(--red)">&#128680; Dores do cliente</div>
+<ul>
+<li>AI sem contexto atualizado</li>
+<li>Agentes com dados antigos</li>
+<li>Dashboards D-1</li>
+<li>Canais digitais lentos/instáveis</li>
+<li>BD produção sobrecarregado</li>
+<li>RAG retornando lixo</li>
+<li>Modelos com baixa acurácia</li>
+<li>Automações no escuro</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title" style="color:var(--cyan)">&#128640; Valor entregue</div>
+<ul>
+<li><strong>Latência:</strong> dados em ms, não horas</li>
+<li><strong>AI melhor:</strong> contexto atualizado</li>
+<li><strong>Eficiência:</strong> menos retrabalho</li>
+<li><strong>TCO:</strong> menos sobrecarga</li>
+<li><strong>Canais:</strong> mais rápidos e estáveis</li>
+<li><strong>Decisões:</strong> baseadas no presente</li>
+<li><strong>AI agêntica:</strong> camada de contexto</li>
+</ul>
+</div>
+</div>
+
+<!-- ROW 2: Qualificação + Objeções -->
+<div class="grid2">
+<div class="box">
+<div class="box-title" style="color:var(--amb)">&#127919; Perguntas-chave para qualificar</div>
+<ul>
+<li>Precisam de decisões em ms ou segundos?</li>
+<li>Canais digitais com timeout/lentidão?</li>
+<li>Dados direto do BD transacional?</li>
+<li>Dashboards D-1 ou batch?</li>
+<li>AI/RAG/agentes precisando de dados frescos?</li>
+<li>Modelos com acurácia baixa?</li>
+<li>Retrabalho operacional por dados atrasados?</li>
+<li>Já usam Kafka, CDC, Redis ou Flink?</li>
+<li>Pressão por redução de TCO?</li>
+<li>Caso de uso crítico para Discovery/MVP?</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title" style="color:var(--red)">&#128737; Objeções e respostas</div>
+<div class="obj-row"><div class="ob">"Já temos DL"</div><div class="re">Fast Data complementa com camada real time. Não substituímos.</div></div>
+<div class="obj-row"><div class="ob">"Já temos Kafka"</div><div class="re">Kafka é parte. Entregamos estratégia, governança, serving, APIs e AI.</div></div>
+<div class="obj-row"><div class="ob">"Batch funciona"</div><div class="re">Para histórico sim. Fast Data é para decisões e AI sobre o presente.</div></div>
+<div class="obj-row"><div class="ob">"Parece complexo"</div><div class="re">Começamos com Discovery ou MVP. Rápido e tangível.</div></div>
+<div class="obj-row"><div class="ob">"Não queremos trocar"</div><div class="re">Complementar e desacoplado. Preserva o legado.</div></div>
+</div>
+</div>
+
+<!-- ROW 3: Setores + Modelo de entrada + Cases -->
+<div class="grid">
+<div class="box">
+<div class="box-title" style="color:var(--pur)">&#127919; Setores prioritários</div>
+<ul>
+<li><strong>Telecom:</strong> canais, atendimento, autogestão</li>
+<li><strong>Utilities:</strong> agência virtual, smart grids</li>
+<li><strong>Financeiro:</strong> antifraude, crédito, liquidez</li>
+<li><strong>Indústria:</strong> IoT, manutenção preditiva</li>
+<li><strong>Logística:</strong> rotas, rastreamento, frotas</li>
+<li><strong>Saúde:</strong> telemetria, fluxo hospitalar</li>
+<li><strong>Varejo:</strong> personalização, estoque</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title" style="color:var(--grn)">&#128197; Modelo de entrada</div>
+<ul>
+<li><strong>Discovery:</strong> 2-4 semanas — diagnóstico, fontes, roadmap, business case</li>
+<li style="margin-top:4px"><strong>PoC/MVP:</strong> 4-8 semanas — caso real com Kafka, Flink, Redis, DHuO</li>
+<li style="margin-top:4px"><strong>Implementação:</strong> 8-16 semanas — rollout completo + governança</li>
+<li style="margin-top:4px"><strong>Evolução:</strong> ongoing — novos casos, expansão, otimização</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title" style="color:var(--grn)">&#127942; Cases (anonimizados)</div>
+<ul>
+<li><strong>Saneamento:</strong> maior da América Latina. Canal digital batia no BD de produção. Fast Data resolveu com CDC + DHuO. <span style="color:var(--grn)">Em produção.</span></li>
+<li style="margin-top:6px"><strong>Telecom A:</strong> dezenas de milhões de clientes. Dados real time nos canais digitais. <span style="color:var(--grn)">Em produção.</span></li>
+<li style="margin-top:6px"><strong>Telecom B:</strong> grande operadora. Modernização para real time + preparação AI. <span style="color:var(--amb)">Em implementação.</span></li>
+</ul>
+</div>
+</div>
+
+<!-- DIFERENCIAIS -->
+<div class="box" style="margin-bottom:0">
+<div class="box-title" style="color:var(--eng)">&#11088; Diferenciais da Engineering</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:10px;color:var(--tx2)">
+<div>&#10004; Dados + APIs + AI em uma visão</div>
+<div>&#10004; DHuO como acelerador</div>
+<div>&#10004; Arquitetura agnóstica</div>
+<div>&#10004; Do diagnóstico à implantação</div>
+<div>&#10004; Conecta com AI/API/Data Journey</div>
+<div>&#10004; Foco em eficiência e valor</div>
+</div>
+</div>
+
+<div class="footer">Engineering do Brasil — Fast Data for AI | Battle Card | Maio 2026 | Material interno</div>
+<!-- CROSS NAV -->
+<div style="position:fixed;bottom:16px;right:16px;z-index:99999;display:flex;gap:5px;flex-wrap:wrap;max-width:460px;">
+  <a href="index.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:700;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(52,211,153,.3);color:#34d399;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Hub</a>
+  <a href="onepage.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">One-page</a>
+  <a href="comparativo.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Comparativo</a>
+  <a href="simulador.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Simulador</a>
+  <a href="arquitetura.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Arquitetura</a>
+  <a href="comercial.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(233,30,140,.25);color:#e91e8c;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Guia</a>
+  <a href="battlecard.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:9px;font-weight:600;padding:7px 12px;border-radius:7px;background:rgba(6,10,16,.95);border:1px solid rgba(229,166,27,.25);color:#e5a61b;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">Battle Card</a>
+</div>
+</body></html>

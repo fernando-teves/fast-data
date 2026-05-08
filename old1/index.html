@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Data for AI — Engineering do Brasil</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#060a10;--bg2:#0b1018;--bg3:#111a28;--bg4:#182235;
+  --card:#0d1520;--brd:#1a2640;--brd2:#253049;
+  --tx:#e8edf4;--tx2:#94a3b8;--tx3:#5a6577;
+  --grn:#34d399;--cyan:#22d3ee;--pur:#a78bfa;--amb:#e5a61b;
+  --eng:#e91e8c;--eng2:#c026d3;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding:40px 20px}
+
+/* GLOW */
+.glow{position:fixed;top:-150px;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse,rgba(52,211,153,.04) 0%,transparent 60%);pointer-events:none;z-index:0}
+
+.wrap{position:relative;z-index:1;max-width:800px;width:100%}
+
+/* HEADER */
+.hdr{text-align:center;margin-bottom:48px}
+.hdr .tag{font-size:9px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:var(--eng);margin-bottom:14px;display:inline-flex;align-items:center;gap:8px}
+.hdr .tag::before,.hdr .tag::after{content:'';width:20px;height:1px;background:var(--eng);opacity:.4}
+.hdr h1{font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1;margin-bottom:12px;background:linear-gradient(135deg,#fff 20%,var(--grn) 75%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr p{font-size:14px;color:var(--tx2);max-width:500px;margin:0 auto;line-height:1.65}
+
+/* CARDS GRID */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:40px}
+@media(max-width:600px){.cards{grid-template-columns:1fr}}
+
+.card{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:28px 24px;text-decoration:none;color:var(--tx);transition:all .25s;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.card:hover{border-color:var(--brd2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;opacity:0;transition:opacity .25s}
+.card:hover::before{opacity:1}
+
+.card.c-grn:hover{border-color:rgba(52,211,153,.3)}
+.card.c-grn::before{background:linear-gradient(90deg,var(--grn),var(--cyan))}
+.card.c-cyan:hover{border-color:rgba(34,211,238,.3)}
+.card.c-cyan::before{background:linear-gradient(90deg,var(--cyan),var(--pur))}
+.card.c-amb:hover{border-color:rgba(229,166,27,.3)}
+.card.c-amb::before{background:linear-gradient(90deg,var(--amb),var(--eng))}
+.card.c-pur:hover{border-color:rgba(167,139,250,.3)}
+.card.c-pur::before{background:linear-gradient(90deg,var(--pur),var(--eng))}
+
+.card .icon{font-size:28px;margin-bottom:14px}
+.card .num{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px}
+.card h3{font-size:17px;font-weight:700;margin-bottom:6px;line-height:1.3}
+.card.c-grn h3{color:var(--grn)}
+.card.c-cyan h3{color:var(--cyan)}
+.card.c-amb h3{color:var(--amb)}
+.card.c-pur h3{color:var(--pur)}
+.card p{font-size:12px;color:var(--tx2);line-height:1.6;flex:1}
+.card .arrow{font-size:11px;font-weight:600;margin-top:14px;display:flex;align-items:center;gap:5px;transition:gap .2s}
+.card:hover .arrow{gap:10px}
+.card.c-grn .arrow{color:var(--grn)}
+.card.c-cyan .arrow{color:var(--cyan)}
+.card.c-amb .arrow{color:var(--amb)}
+.card.c-pur .arrow{color:var(--pur)}
+
+/* METRICS BAR */
+.metrics{display:flex;justify-content:center;gap:32px;margin-bottom:40px;flex-wrap:wrap}
+.met{text-align:center}
+.met .mv{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--grn)}
+.met .ml{font-size:10px;color:var(--tx3);margin-top:2px}
+
+/* FOOTER */
+.foot{text-align:center}
+.foot .brand{font-size:11px;color:var(--tx3);margin-bottom:6px}
+.foot .brand strong{color:var(--tx2)}
+.foot .sub{font-size:9px;color:var(--tx3);opacity:.6}
+</style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="tag">Engineering do Brasil</div>
+    <h1>Fast Data for AI</h1>
+    <p>Plataforma de dados em tempo real para negócios, operações e ambientes dinâmicos. Explore os materiais abaixo.</p>
+  </div>
+
+  <div class="metrics">
+    <div class="met"><div class="mv">&lt;100ms</div><div class="ml">Latência end-to-end</div></div>
+    <div class="met"><div class="mv">99.9%</div><div class="ml">Disponibilidade</div></div>
+    <div class="met"><div class="mv">Real time</div><div class="ml">Freshness</div></div>
+  </div>
+
+  <div class="cards">
+
+    <a class="card c-grn" href="onepage.html">
+      <div class="icon">&#127968;</div>
+      <div class="num">Visão completa</div>
+      <h3>One-page comercial</h3>
+      <p>Apresentação completa da oferta: mercado, dor, proposta de valor, arquitetura, DHuO, casos de uso, cases de sucesso e modelo de entrada.</p>
+      <div class="arrow">Explorar &#8594;</div>
+    </a>
+
+    <a class="card c-cyan" href="comparativo.html">
+      <div class="icon">&#128202;</div>
+      <div class="num">Comparativo</div>
+      <h3>3 arquiteturas lado a lado</h3>
+      <p>BD Tradicional vs. Data Lake/DW vs. Fast Data. Latência, gargalos, riscos, segurança e métricas comparadas visualmente.</p>
+      <div class="arrow">Comparar &#8594;</div>
+    </a>
+
+    <a class="card c-amb" href="simulador.html">
+      <div class="icon">&#9889;</div>
+      <div class="num">Demo interativa</div>
+      <h3>Simulador de request</h3>
+      <p>Envie uma solicitação e veja as 3 arquiteturas processarem em tempo real. O Fast Data responde enquanto os outros ainda travam.</p>
+      <div class="arrow">Simular &#8594;</div>
+    </a>
+
+    <a class="card c-pur" href="arquitetura.html">
+      <div class="icon">&#128736;</div>
+      <div class="num">Profundidade técnica</div>
+      <h3>Arquitetura detalhada</h3>
+      <p>6 camadas da plataforma com tecnologias, latência por hop, segurança por camada e ciclo de vida do dado (Hot → Warm → Cold).</p>
+      <div class="arrow">Detalhar &#8594;</div>
+    </a>
+
+  </div>
+
+  <div class="foot">
+    <div class="brand">Engineering do Brasil — <strong>The Digital Transformation Company</strong></div>
+    <div class="sub">Fast Data for AI | Abril 2026</div>
+  </div>
+
+</div>
+
+<!-- CROSS NAV -->
+<div id="crossnav" style="position:fixed;bottom:16px;right:16px;z-index:99999;display:flex;gap:6px;flex-wrap:wrap;max-width:400px;">
+  <a href="index.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:700;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(52,211,153,.3);color:#34d399;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#127760; Hub</a>
+  <a href="onepage.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:600;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#127968; One-page</a>
+  <a href="comparativo.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:600;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#128202; Comparativo</a>
+  <a href="simulador.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:600;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#9889; Simulador</a>
+  <a href="arquitetura.html" style="font-family:DM Sans,system-ui,sans-serif;font-size:10px;font-weight:600;padding:8px 14px;border-radius:8px;background:rgba(6,10,16,.95);border:1px solid rgba(26,38,64,.8);color:#94a3b8;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.4);">&#128736; Arquitetura</a>
+</div>
+</body>
+</html>
