@@ -1,6 +1,6 @@
 # ============================================
 # Fast Data for AI — Deploy Script (PowerShell)
-# Engineering do Brasil — v3
+# Engineering do Brasil
 # ============================================
 
 $REPO_NAME = "fast-data"
@@ -10,7 +10,7 @@ $DEPLOY_DIR = "C:\deploy\fast-data"
 
 Write-Host ""
 Write-Host "============================================" -ForegroundColor Cyan
-Write-Host "  Fast Data for AI - Deploy v3" -ForegroundColor Cyan
+Write-Host "  Fast Data for AI - Deploy" -ForegroundColor Cyan
 Write-Host "  Engineering do Brasil" -ForegroundColor Cyan
 Write-Host "============================================" -ForegroundColor Cyan
 Write-Host ""
@@ -24,13 +24,11 @@ Set-Location $DEPLOY_DIR
 
 Write-Host "[1/5] Arquivos em $DEPLOY_DIR" -ForegroundColor Yellow
 Write-Host ""
-Write-Host "  index.html        - Hub (pagina inicial)" -ForegroundColor White
+Write-Host "  index.html        - Hub" -ForegroundColor White
 Write-Host "  onepage.html      - One-page comercial" -ForegroundColor White
-Write-Host "  comparativo.html  - Comparativo 3 arquiteturas" -ForegroundColor White
-Write-Host "  simulador.html    - Simulador interativo" -ForegroundColor White
-Write-Host "  arquitetura.html  - Arquitetura detalhada" -ForegroundColor White
-Write-Host "  comercial.html    - Guia Comercial" -ForegroundColor Magenta
-Write-Host "  battlecard.html   - Battle Card" -ForegroundColor Yellow
+Write-Host "  comparativo.html  - Comparativo" -ForegroundColor White
+Write-Host "  simulador.html    - Simulador" -ForegroundColor White
+Write-Host "  arquitetura.html  - Arquitetura" -ForegroundColor White
 Write-Host ""
 
 if (-not (Test-Path ".git")) {
@@ -47,7 +45,7 @@ Write-Host "[3/5] Adicionando arquivos..." -ForegroundColor Yellow
 git add .
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
-$commitMsg = "deploy: Fast Data for AI v3 - $timestamp"
+$commitMsg = "deploy: Fast Data for AI - $timestamp"
 Write-Host "[4/5] Commit: $commitMsg" -ForegroundColor Yellow
 git commit -m $commitMsg
 
@@ -67,6 +65,4 @@ Write-Host "  One-page:     /$REPO_NAME/onepage.html" -ForegroundColor White
 Write-Host "  Comparativo:  /$REPO_NAME/comparativo.html" -ForegroundColor White
 Write-Host "  Simulador:    /$REPO_NAME/simulador.html" -ForegroundColor White
 Write-Host "  Arquitetura:  /$REPO_NAME/arquitetura.html" -ForegroundColor White
-Write-Host "  Guia:         /$REPO_NAME/comercial.html" -ForegroundColor Magenta
-Write-Host "  Battle Card:  /$REPO_NAME/battlecard.html" -ForegroundColor Yellow
 Write-Host ""
